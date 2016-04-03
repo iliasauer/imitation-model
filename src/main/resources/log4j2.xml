@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-2level %c{1} - %msg%n"/>
+        </Console>
+        <RollingFile name="RollingFile" fileName="logs/run.log"
+                     filePattern="logs/$${date:MM-dd-yyyy}/run-%i.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %c{1} - %msg%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="ERROR">
+            <AppenderRef ref="Console"/>
+        </Root>
+        <logger name="ru.ifmo.kot.queue.ModeDispatcher" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </logger>
+        <logger name="ru.ifmo.kot.queue.ui.UiRunner" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+        </logger>
+        <!--<logger name="ru.ifmo.kot.queue.system.engine.inner" level="TRACE" additivity="false">-->
+            <!--<AppenderRef ref="Console"/>-->
+            <!--<AppenderRef ref="RollingFile"/>-->
+        <!--</logger>-->
+    </Loggers>
+</Configuration>
