@@ -3,100 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Queue System</title>
+    <link rel="stylesheet" href="assets/css/basic.css"/>
+    <link rel="stylesheet" href="assets/css/bootstrap.css"/>
 </head>
 <body>
-    <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="row">
-                <div class="col-md-5">
-                    <h1>Queue System</h1>
-                    <p>The number of workers: ${numberOfJobs}</p>
-                    <p>The number of workers: ${numberOfWorkers}</p>
-                    <p>The storage capacity: ${capacityOfStorage}</p>
-                    <p>The service discipline: ${discipline}</p>
-                    <p>The average
-                        job entry interval: ${avgInterval}</p>
-                    <p>The average
-                        job processing time: ${avgProcessing}</p>
-                    <form class="form-horizontal" role="form" action="run" method="post">
-                        <div class="form-group">
-                            <label class="control-label col-md-4" for="number-of-jobs-id">The number
-                                of
-                                jobs</label>
-                            <div class="col-md-4">
-                                <input class="form-control" id="number-of-jobs-id" type="text"
-                                       name="number-of-jobs" value="100"/>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-4" for="number-of-workers-id">The
-                                number of
-                                workers</label>
-                            <div class="col-md-4">
-                                <input class="form-control" id="number-of-workers-id" type="text"
-                                       name="number-of-workers" value="6"/>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-4" for="capacity-of-storage-id">The
-                                capacity
-                                of
-                                the
-                                storage</label>
-                            <div class="col-md-4">
-                                <input class="form-control" id="capacity-of-storage-id" type="text"
-                                       name="capacity-of-storage" value="10"/>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-4" for="discipline-id">The service
-                                discipline</label>
-                            <div class="col-md-4">
-                                <select class="form-control col-md-4" id="discipline-id"
-                                        name="discipline">
-                                    <option>FIFO</option>
-                                    <option selected>LIFO</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-4" for="avg-interval-id">The average
-                                job entry interval</label>
-                            <div class="col-md-4">
-                                <input class="form-control" id="avg-interval-id" type="text"
-                                       name="avg-interval" value="5"/>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-4" for="avg-processing-id">The
-                                average
-                                job processing time</label>
-                            <div class="col-md-4">
-                                <input class="form-control" id="avg-processing-id" type="text"
-                                       name="avg-processing" value="2"/>
-                            </div>
-                        </div>
-                            <button id="run-button" type="submit" class="btn btn-success">Run
-                            </button>
-                            <p id="run-button-sign"></p>
-                    </form>
-                </div>
-                <div class="col-md-7">
-                    <label class="control-label" for="log">The system work</label>
-                    <textarea id="log" rows="20" cols="70" readonly></textarea>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <canvas id="myChart" width="400" height="400"></canvas>
-        </div>
-        <div class="col-md-2">
-            <button id="toggle-chart-1" class="btn btn-default" type="button">The next
-                value chart
-            </button>
-        </div>
+    <!-- App entry point -->
+    <div id="app">
     </div>
-</div>
+    <!-- Include only Require JS -->
+    <script data-main="js/main" src="js/libs/require.js"></script>
 </body>
 </html>
