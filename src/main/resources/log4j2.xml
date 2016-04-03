@@ -22,7 +22,7 @@
         <logger name="ru.ifmo.kot.queue.ui.UiRunner" level="DEBUG" additivity="false">
             <AppenderRef ref="Console"/>
         </logger>
-        <logger name="ru.ifmo.kot.queue.CommandLineRunner" level="DEBUG" additivity="false">
+        <logger name="ru.ifmo.kot.queue.CliRunner" level="DEBUG" additivity="false">
             <AppenderRef ref="Console"/>
         </logger>
         <logger name="ru.ifmo.kot.queue.system.QueueSystem" level="INFO" additivity="false">

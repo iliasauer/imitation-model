@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 public class QueueSystem {
 
     private static final Logger LOGGER = LogManager.getLogger(QueueSystem.class);
-    private static final List<Engine> engineList = new ArrayList<>();
 
     private static Engine engine = null;
 

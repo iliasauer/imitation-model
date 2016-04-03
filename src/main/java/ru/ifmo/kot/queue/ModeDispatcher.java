@@ -3,6 +3,7 @@ package ru.ifmo.kot.queue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.ifmo.kot.queue.system.storage.StorageFactory;
+import ru.ifmo.kot.queue.system.storage.StorageFactory.Discipline;
 import ru.ifmo.kot.queue.ui.UiRunner;
 
 import static ru.ifmo.kot.queue.system.storage.StorageFactory.Discipline.LIFO;
@@ -20,9 +21,6 @@ public class ModeDispatcher {
     public static void main(String[] args) {
         final int numberOfArgs = args.length;
         switch (numberOfArgs) {
-            case 0:
-                CommandLineRunner.start(10, 8, 8, LIFO, 60, 180, 2);
-                break;
             case 1:
             case 2:
                 if (args[0].equalsIgnoreCase(MODE.UI.name())) {
@@ -32,20 +30,31 @@ public class ModeDispatcher {
                     logAndExit();
                 }
                 break;
+            case 0:
+            case 6:
             case 7:
+                try {
+                    CliRunner.start(args);
+                } catch (IllegalArgumentException e) {
+                    logAndExit("Failed to parse arguments", e);
+                }
                 break;
             default:
+                logAndExit();
         }
-
     }
 
     private static void logAndExit() {
-        LOGGER.error("There is no command for specified arguments.");
-        System.exit(COMMAND_NOT_FOUND_CODE);
+        logAndExit("There is no command for specified arguments.");
     }
 
     private static void logAndExit(final String message) {
         LOGGER.error(message);
+        System.exit(COMMAND_NOT_FOUND_CODE);
+    }
+
+    private static void logAndExit(final String message, final Throwable t) {
+        LOGGER.error(message, t);
         System.exit(COMMAND_NOT_FOUND_CODE);
     }
 
