@@ -22,6 +22,9 @@
         <logger name="ru.ifmo.kot.queue.ui.UiRunner" level="DEBUG" additivity="false">
             <AppenderRef ref="Console"/>
         </logger>
+        <logger name="ru.ifmo.kot.queue.util.random" level="ERROR" additivity="false">
+            <AppenderRef ref="Console"/>
+        </logger>
         <!--<logger name="ru.ifmo.kot.queue.system.engine.inner" level="TRACE" additivity="false">-->
             <!--<AppenderRef ref="Console"/>-->
             <!--<AppenderRef ref="RollingFile"/>-->

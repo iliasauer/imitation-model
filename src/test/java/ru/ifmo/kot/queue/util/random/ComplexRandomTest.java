@@ -3,8 +3,10 @@ package ru.ifmo.kot.queue.util.random;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.moment.Variance;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import static java.lang.Math.sqrt;
 import static org.junit.Assert.assertEquals;
 import static ru.ifmo.kot.queue.util.random.ComplexRandom.*;
 
@@ -144,6 +146,25 @@ public class ComplexRandomTest {
     public void checkInterval() {
         final double[] actualInterval = interval(commonSequence);
         System.out.println("Interval: [" + actualInterval[0] + ", " + actualInterval[1] + "]");
+    }
+
+    @Ignore
+
+
+    @Test
+    public void checkHypothesis() {
+        final double n = commonSequence.length;
+        final double mean = mean(commonSequence);
+        final double sd = standardDeviation(commonSequence);
+        final double accuracy = accuracy(commonSequence);
+
+        // significance criterion statistics
+        final double z = sqrt(n) * (mean - accuracy) / sd;
+        System.out.println("n: " + n);
+        System.out.println("Mean: " + mean);
+        System.out.println("Standard deviation: " + sd);
+        System.out.println("Accuracy: " + accuracy);
+        System.out.println("Z: " + z);
     }
 
     @Test

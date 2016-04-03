@@ -30,10 +30,10 @@ public class ComplexRandom {
     /**
      * the number of sequence values
      */
-    public static final int n = 1000;
+    public static final int n = 10;
 
     /**
-     * the quantile of a standard normal distribution of order of "1-α / 2" // todo update
+     * the quantile of a standard normal distribution of order of "1 - α/2"
      * α=1-β - a significance level (α = 0.05)
      */
     public static final double u = 1.96;
@@ -218,7 +218,7 @@ public class ComplexRandom {
         return sqrt(variance(sequence) / sequence.length);
     }
 
-    private static double accuracy(double[] sequence) {
+    public static double accuracy(double[] sequence) {
         return meanSquaredDisplacement(sequence) * u;
     }
 
