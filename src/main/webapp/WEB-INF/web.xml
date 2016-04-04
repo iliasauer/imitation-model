@@ -9,10 +9,19 @@
         <servlet-class>ru.ifmo.kot.queue.ui.MainServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>runServlet</servlet-name>
+        <servlet-class>ru.ifmo.kot.queue.ui.RunServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>mainServlet</servlet-name>
         <url-pattern>/main</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>runServlet</servlet-name>
+        <url-pattern>/run</url-pattern>
     </servlet-mapping>
 
     <welcome-file-list>

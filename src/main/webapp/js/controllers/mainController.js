@@ -1,4 +1,3 @@
-
 define([
     "jquery",
     "handlebars",
@@ -7,15 +6,13 @@ define([
     "text!../../templates/chartWindow.hbs",
     "../util/handlebarsShortcuts",
     "../util/templateConstants"
-], function(
-    $,
-    Handlebars,
-    appTemplate,
-    logAreaTemplate,
-    chartWindowTemplate,
-    HB,
-    TEMPLATE
-) {
+], function ($,
+             Handlebars,
+             appTemplate,
+             logAreaTemplate,
+             chartWindowTemplate,
+             HB,
+             TEMPLATE) {
     function run(params) {
         // if (params.property)
         // render(params.property);
@@ -29,15 +26,31 @@ define([
                 selectFields: TEMPLATE.selectFields()
             });
         }
+
         function renderLogArea(property) {
-            HB.compileAndInsert('init-block', 'afterend', logAreaTemplate, { numberOfJobs: property });
+            HB.compileAndInsert('init-block', 'afterend', logAreaTemplate, {numberOfJobs: property});
         }
+
         function renderChartWindow(property) {
-            HB.compileAndInsert('main-block', 'afterend', chartWindowTemplate, { numberOfJobs: property });
+            HB.compileAndInsert('main-block', 'afterend', chartWindowTemplate, {numberOfJobs: property});
         }
+
+        function bindEvents() {
+            function runButtonEvent() {
+                $.post("/run", $("#main-form").serialize())
+                    .done(function (data) {
+                        $("#jobs-id").val("IT WORKS?!");
+                    });
+            }
+            $("#run-button").click(function () {
+                runButtonEvent();
+            });
+        }
+
         renderApp(property);
         renderLogArea(property);
         renderChartWindow(property);
+        bindEvents()
     }
 
     return {

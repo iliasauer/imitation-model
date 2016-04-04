@@ -13,14 +13,14 @@
                                 {{obj.name}}
                             {{/with}}: </p>
                     {{/each}}
-                    <form class="form-horizontal" role="form" action="run" method="post">
+                    <form class="form-horizontal" role="form" id="main-form" method="post">
                         {{#each inputFields}}
                             <div class="form-group">
                                 <label class="control-label col-md-4" for="{{@key}}-input-id">The
                                     {{this}}</label>
                                 <div class="col-md-4">
                                     <input class="form-control" id="{{@key}}-input-id" type="text"
-                                           name="{{@key}}"/>
+                                           name="{{@key}}-input"/>
                                 </div>
                             </div>
                         {{/each}}
@@ -33,7 +33,7 @@
                                 </label>
                                 <div class="col-md-4">
                                     <select class="form-control col-md-4" id="{{@key}}-select-id"
-                                            name="{{@key}}">
+                                            name="{{@key}}-select">
                                         {{#with this as |obj|}}
                                             {{#each obj.values}}
                                                 <option>{{this}}</option>
@@ -43,7 +43,8 @@
                                 </div>
                             </div>
                         {{/each}}
-                        <button id="run-button" type="submit" class="btn btn-success">Run
+                        <button id="run-button" type="button" class="btn btn-success">
+                            Run
                         </button>
                         <p id="run-button-sign"></p>
                     </form>
