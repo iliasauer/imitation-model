@@ -3,12 +3,18 @@ define([
     "jquery",
     "handlebars",
     "text!../../templates/app.hbs",
-    "../util/handlebarsShortcuts"
+    "text!../../templates/logArea.hbs",
+    "text!../../templates/chartWindow.hbs",
+    "../util/handlebarsShortcuts",
+    "../util/templateConstants"
 ], function(
     $,
     Handlebars,
     appTemplate,
-    HB
+    logAreaTemplate,
+    chartWindowTemplate,
+    HB,
+    TEMPLATE
 ) {
     function run(params) {
         // if (params.property)
@@ -18,10 +24,20 @@ define([
 
     function render(property) {
         function renderApp(property) {
-            const appHtml = HB.compile(appTemplate, { numberOfJobs: property });
-            HB.insert("app", 'afterbegin', appHtml)
+            HB.compileAndInsert('app', 'beforeend', appTemplate, {
+                inputFields: TEMPLATE.inputFields(),
+                selectFields: TEMPLATE.selectFields()
+            });
+        }
+        function renderLogArea(property) {
+            HB.compileAndInsert('init-block', 'afterend', logAreaTemplate, { numberOfJobs: property });
+        }
+        function renderChartWindow(property) {
+            HB.compileAndInsert('main-block', 'afterend', chartWindowTemplate, { numberOfJobs: property });
         }
         renderApp(property);
+        renderLogArea(property);
+        renderChartWindow(property);
     }
 
     return {
