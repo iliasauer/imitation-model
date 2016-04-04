@@ -22,7 +22,7 @@ public class MainServlet extends HttpServlet {
             throws ServletException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-        String json = mapper.writeValueAsString(Charts.correlationChart());
+        String json = mapper.writeValueAsString(Charts.prevNextChart());
         response.setContentType(MimeTypes.Type.APPLICATION_JSON.toString());
         response.getWriter().write(json);
     }
