@@ -1,6 +1,3 @@
-/**
- * Created on 01.04.16.
- */
 define(function() {
 
     const INPUT_FIELDS = {
@@ -8,7 +5,8 @@ define(function() {
         "workers": "number of workers",
         "storage": "storage capacity",
         "interval": "average job entry interval",
-        "process": "average job processing time"
+        "process": "average job processing time",
+        "runs": "number of runs"
     };
 
     const SELECT_FIELDS = {

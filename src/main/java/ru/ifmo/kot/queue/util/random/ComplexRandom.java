@@ -30,7 +30,7 @@ public class ComplexRandom {
     /**
      * the number of sequence values
      */
-    public static final int n = 10;
+    public static final int n = 1000;
 
     /**
      * the quantile of a standard normal distribution of order of "1 - α/2"

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.MimeTypes;
+import ru.ifmo.kot.queue.CliRunner;
 import ru.ifmo.kot.queue.system.QueueSystem;
 import ru.ifmo.kot.queue.system.storage.StorageFactory;
 import ru.ifmo.kot.queue.system.storage.StorageFactory.Discipline;
@@ -28,6 +29,7 @@ public class RunServlet extends HttpServlet {
     private Discipline discipline = null;
     private int interval = 0;
     private int process = 0;
+    private int runs = 0;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -38,12 +40,12 @@ public class RunServlet extends HttpServlet {
         final String disciplineParam = request.getParameter("discipline-select");
         final String intervalParam = request.getParameter("interval-input");
         final String processParam = request.getParameter("process-input");
+        final String runsParam = request.getParameter("runs-input");
         Map<String, String> responseMap = new HashMap<>();
         if (validateParams(jobsParam, workersParam, storageParam,
-                disciplineParam, intervalParam, processParam)) {
-            QueueSystem.run(jobs, workers, storage, discipline, interval, process);
-            QueueSystem.shutdown();
-            responseMap.put("status", "Run is finished.");
+                disciplineParam, intervalParam, processParam, runsParam)) {
+            new CliRunner(jobs, workers, storage, discipline, interval, process, runs).run();
+            responseMap.put("status", "All runs finished.");
         } else {
             responseMap.put("status", "Parameters are invalid.");
         }
@@ -61,6 +63,7 @@ public class RunServlet extends HttpServlet {
             storage = Integer.parseInt(params[2]);
             interval = Integer.parseInt(params[4]);
             process = Integer.parseInt(params[5]);
+            runs = Integer.parseInt(params[6]);
         } catch (NumberFormatException e) {
             LOGGER.error("Failed to parse parameter", e);
             return false;

@@ -12,42 +12,42 @@ public class CliRunner implements Runnable {
 
     private static boolean hasBeenStarted = false;
 
-    private final int numberOfJobs;
-    private final int numberOfWorkers;
-    private final int capacityOfStorage;
+    private final int jobs;
+    private final int workers;
+    private final int storage;
     private final Discipline discipline;
-    private final int avgInterval;
-    private final int avgProcessingTime;
-    private final int numberOfRuns;
+    private final int interval;
+    private final int process;
+    private final int runs;
 
-    private CliRunner(int numberOfJobs, int numberOfWorkers,
-                      int capacityOfStorage, Discipline discipline,
-                      int avgInterval, int avgProcessingTime,
-                      int numberOfRuns) {
-        this.numberOfJobs = numberOfJobs;
-        this.numberOfWorkers = numberOfWorkers;
-        this.capacityOfStorage = capacityOfStorage;
+    public CliRunner(int jobs, int workers,
+                     int storage, Discipline discipline,
+                     int interval, int process,
+                     int runs) {
+        this.jobs = jobs;
+        this.workers = workers;
+        this.storage = storage;
         this.discipline = discipline;
-        this.avgInterval = avgInterval;
-        this.avgProcessingTime = avgProcessingTime;
-        this.numberOfRuns = numberOfRuns;
+        this.interval = interval;
+        this.process = process;
+        this.runs = runs;
     }
 
     public static void start(String ... args) {
-        final int numberOfJobs, numberOfWorkers,
-                capacityOfStorage, avgInterval,
-                avgProcessingTime, numberOfRuns;
+        final int jobs, workers,
+                storage, interval,
+                process, runs;
         final Discipline discipline;
         if (args.length != 0) {
-            numberOfJobs = Integer.parseInt(args[0]);
-            numberOfWorkers = Integer.parseInt(args[1]);
-            capacityOfStorage = Integer.parseInt(args[2]);
-            avgInterval = Integer.parseInt(args[4]);
-            avgProcessingTime = Integer.parseInt(args[5]);
+            jobs = Integer.parseInt(args[0]);
+            workers = Integer.parseInt(args[1]);
+            storage = Integer.parseInt(args[2]);
+            interval = Integer.parseInt(args[4]);
+            process = Integer.parseInt(args[5]);
             if (args.length == 6) {
-                numberOfRuns = 1;
+                runs = 1;
             } else {
-                numberOfRuns = Integer.parseInt(args[6]);
+                runs = Integer.parseInt(args[6]);
             }
             discipline = StorageFactory.getDiscipline(args[3]);
             if (discipline == null) {
@@ -55,19 +55,19 @@ public class CliRunner implements Runnable {
             }
         } else {
             // the default configuration
-            numberOfJobs = 10;
-            numberOfWorkers = 10;
-            capacityOfStorage = 10;
-            avgInterval = 180;
-            avgProcessingTime = 60;
+            jobs = 10;
+            workers = 10;
+            storage = 10;
+            interval = 180;
+            process = 60;
             discipline = Discipline.LIFO;
-            numberOfRuns = 2;
+            runs = 2;
         }
         if (!hasBeenStarted) {
-            new CliRunner(numberOfJobs, numberOfWorkers,
-                    capacityOfStorage, discipline,
-                    avgInterval, avgProcessingTime,
-                    numberOfRuns).run();;
+            new CliRunner(jobs, workers,
+                    storage, discipline,
+                    interval, process,
+                    runs).run();
             hasBeenStarted = true;
         } else {
             LOGGER.error("The command line mode has already started");
@@ -77,11 +77,11 @@ public class CliRunner implements Runnable {
 
     @Override
     public void run() {
-        for (int i = 0; i < numberOfRuns; i++) {
+        for (int i = 0; i < runs; i++) {
             LOGGER.info("Run #" + (i + 1));
-            QueueSystem.run(numberOfJobs, numberOfWorkers,
-                    capacityOfStorage, discipline,
-                    avgInterval, avgProcessingTime);
+            QueueSystem.run(jobs, workers,
+                    storage, discipline,
+                    interval, process);
             QueueSystem.shutdown();
         }
     }
