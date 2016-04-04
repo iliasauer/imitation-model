@@ -39,7 +39,6 @@ public class QueueSystem {
             counter++;
         }
         awaitTasksCompletion(futures);
-        shutdown();
     }
 
     private static void awaitTasksCompletion(List<Future<?>> futures) {

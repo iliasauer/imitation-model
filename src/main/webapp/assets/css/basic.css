@@ -4,3 +4,7 @@ body {
 #myChart {
     padding: 20px;
 }
+#run-button-sign {
+    display: inline-block !important;
+    padding-left: 10px !important;
+}

@@ -82,6 +82,7 @@ public class CliRunner implements Runnable {
             QueueSystem.run(numberOfJobs, numberOfWorkers,
                     capacityOfStorage, discipline,
                     avgInterval, avgProcessingTime);
+            QueueSystem.shutdown();
         }
     }
 }

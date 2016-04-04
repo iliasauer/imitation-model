@@ -1,7 +1,12 @@
 package ru.ifmo.kot.queue.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.MimeTypes;
+import ru.ifmo.kot.queue.system.QueueSystem;
+import ru.ifmo.kot.queue.system.storage.StorageFactory;
+import ru.ifmo.kot.queue.system.storage.StorageFactory.Discipline;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,19 +18,66 @@ import java.util.Map;
 
 public class RunServlet extends HttpServlet {
 
+    private static final Logger LOGGER = LogManager.getLogger(RunServlet.class);
+
+
+    private int jobs = 0;
+    private int workers = 0;
+    private int storage = 0;
+    private Discipline discipline = null;
+    private int interval = 0;
+    private int process = 0;
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        final String numberOfJobsParam = request.getParameter("jobs-input");
-        final String numberOfWorkersParam = request.getParameter("workers-input");
-        final String capacityOfStorageParam = request.getParameter("storage-input");
+        final String jobsParam = request.getParameter("jobs-input");
+        final String workersParam = request.getParameter("workers-input");
+        final String storageParam = request.getParameter("storage-input");
         final String disciplineParam = request.getParameter("discipline-select");
-        final String avgIntervalParam = request.getParameter("interval-input");
-        final String avgProcessingParam = request.getParameter("process-input");
-        Map<String, String> map = new HashMap<>();
-        map.put("property", "fuckyeah");
-        String json = new ObjectMapper().writeValueAsString(map);
+        final String intervalParam = request.getParameter("interval-input");
+        final String processParam = request.getParameter("process-input");
+        Map<String, String> responseMap = new HashMap<>();
+        if (validateParams(jobsParam, workersParam, storageParam,
+                disciplineParam, intervalParam, processParam)) {
+            QueueSystem.run(jobs, workers, storage, discipline, interval, process);
+            QueueSystem.shutdown();
+            responseMap.put("status", "Run is finished.");
+        } else {
+            responseMap.put("status", "Parameters are invalid.");
+        }
+        String json = new ObjectMapper().writeValueAsString(responseMap);
         response.setContentType(MimeTypes.Type.APPLICATION_JSON.toString());
-        response.getWriter().write(json);
+        response.getWriter().write(json);;
+    }
+
+    private boolean validateParams(String ... params) {
+        try {
+            jobs = Integer.parseInt(params[0]);
+            workers = Integer.parseInt(params[1]);
+            storage = Integer.parseInt(params[2]);
+            interval = Integer.parseInt(params[4]);
+            process = Integer.parseInt(params[5]);
+        } catch (NumberFormatException e) {
+            LOGGER.error("Failed to parse parameter", e);
+            return false;
+        }
+        if (jobs <= 0) {
+            return false;
+        } else if (workers <= 0) {
+            return false;
+        } else if (storage <= 0) {
+            return false;
+        } else if (interval <= 0) {
+            return false;
+        } else if (process <= 0) {
+            return false;
+        } else {
+            discipline = StorageFactory.getDiscipline(params[3]);
+            if (discipline == null) {
+                return false;
+            }
+        }
+        return true;
     }
 }

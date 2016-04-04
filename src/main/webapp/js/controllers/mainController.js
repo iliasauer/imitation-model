@@ -25,6 +25,7 @@ define([
                 inputFields: TEMPLATE.inputFields(),
                 selectFields: TEMPLATE.selectFields()
             });
+            $("#start-over-button").hide();
         }
 
         function renderLogArea(property) {
@@ -37,18 +38,30 @@ define([
 
         function bindEvents() {
             function runButtonEvent() {
-                $.post("/run", $("#main-form").serialize())
+                $("#run-button").prop("disabled",true);
+                const formIdString = "#main-form";
+                $.each(TEMPLATE.inputFields(), function (key) {
+                    var pElem = $("#" + key + "-id");
+                    var inputElem = $("#" + key + "-input-id");
+                    pElem.text(pElem.text().split(':')[0] + ": " + inputElem.val());
+                });
+                $.each(TEMPLATE.selectFields(), function (key) {
+                    var pElem = $("#" + key + "-id");
+                    var selectElem = $("#" + key + "-select-id");
+                    pElem.text(pElem.text().split(':')[0] + ": " + selectElem.val());
+                });
+                $("#run-button-sign").text("Wait...");
+                $.post("/run", $(formIdString).serialize())
                     .done(function (data) {
-                        
-                        const currentValue = $("#jobs-id").text();
-                        $("#jobs-id").text(currentValue + data.property);
+                        $("#run-button-sign").text(data.status);
+                        $("#run-button").prop("disabled", false);
                     });
+                $(formIdString).trigger("reset");
             }
             $("#run-button").click(function () {
                 runButtonEvent();
             });
         }
-
         renderApp(property);
         renderLogArea(property);
         renderChartWindow(property);
