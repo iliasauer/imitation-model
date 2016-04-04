@@ -1,6 +1,8 @@
 define([
     "jquery",
     "handlebars",
+    "Chart",
+    "Scatter",
     "text!../../templates/app.hbs",
     "text!../../templates/logArea.hbs",
     "text!../../templates/chartWindow.hbs",
@@ -8,19 +10,21 @@ define([
     "../util/templateConstants"
 ], function ($,
              Handlebars,
+             Chart,
+             Scatter,
              appTemplate,
              logAreaTemplate,
              chartWindowTemplate,
              HB,
              TEMPLATE) {
-    function run(params) {
+    function run(aChart) {
         // if (params.property)
         // render(params.property);
-        render(params);
+        render(aChart);
     }
 
-    function render(property) {
-        function renderApp(property) {
+    function render(aChart) {
+        function renderApp() {
             HB.compileAndInsert('app', 'beforeend', appTemplate, {
                 inputFields: TEMPLATE.inputFields(),
                 selectFields: TEMPLATE.selectFields()
@@ -28,12 +32,12 @@ define([
             $("#start-over-button").hide();
         }
 
-        function renderLogArea(property) {
-            HB.compileAndInsert('init-block', 'afterend', logAreaTemplate, {numberOfJobs: property});
+        function renderLogArea() {
+            HB.compileAndInsert('init-block', 'afterend', logAreaTemplate, {numberOfJobs: ""});
         }
 
-        function renderChartWindow(property) {
-            HB.compileAndInsert('main-block', 'afterend', chartWindowTemplate, {numberOfJobs: property});
+        function renderChartWindow() {
+            HB.compileAndInsert('main-block', 'afterend', chartWindowTemplate, {numberOfJobs: ""});
         }
 
         function bindEvents() {
@@ -61,12 +65,36 @@ define([
             $("#run-button").click(function () {
                 runButtonEvent();
             });
+            $("#toggle-chart-1").click(function () {
+                $("#myChart").toggle('slow');
+            });
         }
-        renderApp(property);
-        renderLogArea(property);
-        renderChartWindow(property);
+        var drawChart = function (data) {
+            var ctx = document.getElementById("myChart").getContext("2d");
+            new Chart(ctx).Scatter(data, {
+                datasetStroke: false,
+                responsive: true,
+                hoverMode: 'single',
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            zeroLineColor: "rgba(0,0,0,1)"
+                        }
+                    }]
+                }
+            });
+        };
+        renderApp();
+        renderLogArea();
+        renderChartWindow();
         bindEvents();
+        drawChart([{
+            label: 'My First dataset',
+            data: aChart.values
+        }]);
     }
+
+
 
     return {
         run: run

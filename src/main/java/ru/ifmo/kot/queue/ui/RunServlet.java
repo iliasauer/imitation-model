@@ -1,5 +1,7 @@
 package ru.ifmo.kot.queue.ui;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +21,6 @@ import java.util.Map;
 public class RunServlet extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(RunServlet.class);
-
 
     private int jobs = 0;
     private int workers = 0;
@@ -46,7 +47,9 @@ public class RunServlet extends HttpServlet {
         } else {
             responseMap.put("status", "Parameters are invalid.");
         }
-        String json = new ObjectMapper().writeValueAsString(responseMap);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        String json = mapper.writeValueAsString(responseMap);
         response.setContentType(MimeTypes.Type.APPLICATION_JSON.toString());
         response.getWriter().write(json);;
     }
