@@ -39,7 +39,9 @@ define([
             function runButtonEvent() {
                 $.post("/run", $("#main-form").serialize())
                     .done(function (data) {
-                        $("#jobs-id").val("IT WORKS?!");
+                        
+                        const currentValue = $("#jobs-id").text();
+                        $("#jobs-id").text(currentValue + data.property);
                     });
             }
             $("#run-button").click(function () {
@@ -50,7 +52,7 @@ define([
         renderApp(property);
         renderLogArea(property);
         renderChartWindow(property);
-        bindEvents()
+        bindEvents();
     }
 
     return {

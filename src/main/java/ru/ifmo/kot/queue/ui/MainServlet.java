@@ -18,9 +18,8 @@ public class MainServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         Map<String, String> map = new HashMap<>();
-        map.put("property", "undefined");
+        map.put("property", "fuckyeah");
         String json = new ObjectMapper().writeValueAsString(map);
-        response.setContentType(MimeTypes.Type.APPLICATION_JSON.toString());
         response.setContentType(MimeTypes.Type.APPLICATION_JSON.toString());
         response.getWriter().write(json);
     }

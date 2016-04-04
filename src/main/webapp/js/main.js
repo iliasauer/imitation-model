@@ -9,7 +9,5 @@ require(["./requirejs/config"], function() {
         $.get("/main", function (params) {
             mainController.run(params);
         });
-
-        // mainController.run("param");
     });
 });
