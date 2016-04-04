@@ -17,12 +17,18 @@ import java.util.Map;
 
 public class MainServlet extends HttpServlet {
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    static {
+        MAPPER.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-        String json = mapper.writeValueAsString(Charts.prevNextChart());
+        String json = MAPPER.writeValueAsString(Charts.prevNextChart());
         response.setContentType(MimeTypes.Type.APPLICATION_JSON.toString());
         response.getWriter().write(json);
     }

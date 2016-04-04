@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.ifmo.kot.queue.system.engine.Engine;
 import ru.ifmo.kot.queue.system.job.Job;
-import ru.ifmo.kot.queue.system.storage.StorageFactory.Discipline;
+import ru.ifmo.kot.queue.system.storage.Discipline;
 import ru.ifmo.kot.queue.util.random.SimpleRandom;
 
 import java.util.ArrayList;

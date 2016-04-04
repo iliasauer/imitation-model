@@ -7,9 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.MimeTypes;
 import ru.ifmo.kot.queue.CliRunner;
-import ru.ifmo.kot.queue.system.QueueSystem;
 import ru.ifmo.kot.queue.system.storage.StorageFactory;
-import ru.ifmo.kot.queue.system.storage.StorageFactory.Discipline;
+import ru.ifmo.kot.queue.system.storage.Discipline;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,6 +21,11 @@ import java.util.Map;
 public class RunServlet extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(RunServlet.class);
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    static {
+        MAPPER.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+    }
 
     private int jobs = 0;
     private int workers = 0;
@@ -49,9 +53,7 @@ public class RunServlet extends HttpServlet {
         } else {
             responseMap.put("status", "Parameters are invalid.");
         }
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-        String json = mapper.writeValueAsString(responseMap);
+        String json = MAPPER.writeValueAsString(responseMap);
         response.setContentType(MimeTypes.Type.APPLICATION_JSON.toString());
         response.getWriter().write(json);;
     }
@@ -65,7 +67,7 @@ public class RunServlet extends HttpServlet {
             process = Integer.parseInt(params[5]);
             runs = Integer.parseInt(params[6]);
         } catch (NumberFormatException e) {
-            LOGGER.error("Failed to parse parameter", e);
+            LOGGER.error("Failed to parse parameter");
             return false;
         }
         if (jobs <= 0) {

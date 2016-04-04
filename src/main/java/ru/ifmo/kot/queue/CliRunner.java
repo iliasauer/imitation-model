@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.ifmo.kot.queue.system.QueueSystem;
 import ru.ifmo.kot.queue.system.storage.StorageFactory;
-import ru.ifmo.kot.queue.system.storage.StorageFactory.Discipline;
+import ru.ifmo.kot.queue.system.storage.Discipline;
 
 public class CliRunner implements Runnable {
 

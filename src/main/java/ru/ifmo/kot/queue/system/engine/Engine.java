@@ -2,7 +2,7 @@ package ru.ifmo.kot.queue.system.engine;
 
 import ru.ifmo.kot.queue.system.job.JobRejectionPolicy;
 import ru.ifmo.kot.queue.system.storage.StorageFactory;
-import ru.ifmo.kot.queue.system.storage.StorageFactory.Discipline;
+import ru.ifmo.kot.queue.system.storage.Discipline;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;

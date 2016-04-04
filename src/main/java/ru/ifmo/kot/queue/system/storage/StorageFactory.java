@@ -4,10 +4,6 @@ import java.util.concurrent.BlockingQueue;
 
 public class StorageFactory {
 
-    public enum Discipline {
-        FIFO, LIFO
-    }
-
     public static Discipline getDiscipline(String disciplineName) {
         for (Discipline discipline: Discipline.values()) {
             if (disciplineName.equalsIgnoreCase(discipline.name())) {
