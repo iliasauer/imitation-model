@@ -3,8 +3,13 @@ require(["./requirejs/config"], function() {
     //  App entry point
     require([
         "jquery",
-    ], function($) {
-        //  get all properties from runTimeConfig
-        alert("It works!");
+        "./controllers/mainController"
+        
+    ], function($, mainController) {
+        $.get("/main", function (params) {
+            mainController.run(params);
+        });
+
+        // mainController.run("param");
     });
 });

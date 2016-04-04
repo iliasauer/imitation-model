@@ -11,87 +11,90 @@ public class UiRunner implements Runnable {
 
     private static final int DEFAULT_PORT = 8080;
     private static final Logger LOGGER = LogManager.getLogger(UiRunner.class);
-    private static final String WEBAPP_DIR_LOCATION = "src/main/webapp/";
+    private static final String WEBAPP_DIR_LOCATION =
+            "src/main/webapp/";
+    private static final String WEBXML_LOCATION =
+            WEBAPP_DIR_LOCATION + "WEB-INF/web.xml";
     private static final String CONTEXT_PATH = "/";
     private static boolean hasBeenStarted = false;
 
     static {
-        Log.setLog(new org.eclipse.jetty.util.log.Logger() {
-            @Override
-            public String getName() {
-                return "FakeLogger";
-            }
-
-            @Override
-            public void warn(String msg, Object... args) {
-
-            }
-
-            @Override
-            public void warn(Throwable thrown) {
-
-            }
-
-            @Override
-            public void warn(String msg, Throwable thrown) {
-
-            }
-
-            @Override
-            public void info(String msg, Object... args) {
-
-            }
-
-            @Override
-            public void info(Throwable thrown) {
-
-            }
-
-            @Override
-            public void info(String msg, Throwable thrown) {
-
-            }
-
-            @Override
-            public boolean isDebugEnabled() {
-                return false;
-            }
-
-            @Override
-            public void setDebugEnabled(boolean enabled) {
-
-            }
-
-            @Override
-            public void debug(String msg, Object... args) {
-
-            }
-
-            @Override
-            public void debug(String msg, long value) {
-
-            }
-
-            @Override
-            public void debug(Throwable thrown) {
-
-            }
-
-            @Override
-            public void debug(String msg, Throwable thrown) {
-
-            }
-
-            @Override
-            public org.eclipse.jetty.util.log.Logger getLogger(String name) {
-                return this;
-            }
-
-            @Override
-            public void ignore(Throwable ignored) {
-
-            }
-        }); // just to remove extra messages
+//        Log.setLog(new org.eclipse.jetty.util.log.Logger() {
+//            @Override
+//            public String getName() {
+//                return "FakeLogger";
+//            }
+//
+//            @Override
+//            public void warn(String msg, Object... args) {
+//
+//            }
+//
+//            @Override
+//            public void warn(Throwable thrown) {
+//
+//            }
+//
+//            @Override
+//            public void warn(String msg, Throwable thrown) {
+//
+//            }
+//
+//            @Override
+//            public void info(String msg, Object... args) {
+//
+//            }
+//
+//            @Override
+//            public void info(Throwable thrown) {
+//
+//            }
+//
+//            @Override
+//            public void info(String msg, Throwable thrown) {
+//
+//            }
+//
+//            @Override
+//            public boolean isDebugEnabled() {
+//                return false;
+//            }
+//
+//            @Override
+//            public void setDebugEnabled(boolean enabled) {
+//
+//            }
+//
+//            @Override
+//            public void debug(String msg, Object... args) {
+//
+//            }
+//
+//            @Override
+//            public void debug(String msg, long value) {
+//
+//            }
+//
+//            @Override
+//            public void debug(Throwable thrown) {
+//
+//            }
+//
+//            @Override
+//            public void debug(String msg, Throwable thrown) {
+//
+//            }
+//
+//            @Override
+//            public org.eclipse.jetty.util.log.Logger getLogger(String name) {
+//                return this;
+//            }
+//
+//            @Override
+//            public void ignore(Throwable ignored) {
+//
+//            }
+//        }); // just to remove extra messages
     }
 
     private Server server = null;
@@ -117,19 +120,13 @@ public class UiRunner implements Runnable {
 
     @Override
     public void run() {
-        Configuration.ClassList classList = Configuration.ClassList
-                .setServerDefault(server);
-        classList.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration",
-                "org.eclipse.jetty.plus.webapp.EnvConfiguration",
-                "org.eclipse.jetty.plus.webapp.PlusConfiguration");
-        classList.addBefore(
-                "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
-                "org.eclipse.jetty.annotations.AnnotationConfiguration");
+
 
         WebAppContext ctx = new WebAppContext();
         ctx.setContextPath(CONTEXT_PATH);
+        ctx.setDescriptor(WEBXML_LOCATION);
         ctx.setResourceBase(WEBAPP_DIR_LOCATION);
-//        ctx.setParentLoaderPriority(true); // todo WTF
+        ctx.setParentLoaderPriority(true);
 
         server.setHandler(ctx);
         try {
