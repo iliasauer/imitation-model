@@ -1,11 +1,7 @@
 package ru.ifmo.kot.queue.ui;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import ru.ifmo.kot.queue.system.job.Job;
@@ -39,13 +35,15 @@ public class CommonWebSocket extends WebSocketAdapter {
     @Override
     public void onWebSocketText(String message) {
         LOGGER.debug("The message received: " + message + ".");
-        Thread taskThread = null;
         switch (message) {
             case "startLog":
-                executor.scheduleAtFixedRate(new Task(), 100, 500, TimeUnit.MILLISECONDS);
+                executor.scheduleAtFixedRate(new Task(), 100, 200, TimeUnit
+                        .MILLISECONDS);
                 break;
             case "stopLog":
-                stop();
+                executor.shutdown();
+                Job.resetRunsCounter();
+                executor = Executors.newScheduledThreadPool(1);
                 break;
         }
     }

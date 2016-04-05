@@ -71,7 +71,7 @@ public class QueueSystem {
         LOGGER.info("The system is shutting down.");
         engine.shutdown();
         engine = null;
-        Job.resetCounter();
+        Job.resetJobCounter();
         Job.resetLogger();
     }
 }
