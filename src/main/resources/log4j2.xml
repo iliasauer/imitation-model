@@ -34,7 +34,7 @@
         <logger name="ru.ifmo.kot.queue.ui.RunServlet" level="ERROR" additivity="false">
             <AppenderRef ref="Console"/>
         </logger>
-        <logger name="ru.ifmo.kot.queue.ui.CommonWebSocket" level="ERROR" additivity="false">
+        <logger name="ru.ifmo.kot.queue.ui.CommonWebSocket" level="DEBUG" additivity="false">
             <AppenderRef ref="Console"/>
         </logger>
         <!--<logger name="ru.ifmo.kot.queue.system.engine.inner" level="TRACE" additivity="false">-->

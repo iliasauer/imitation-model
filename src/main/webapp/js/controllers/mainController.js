@@ -7,7 +7,8 @@ define([
     "text!../../templates/logArea.hbs",
     "text!../../templates/chartWindow.hbs",
     "../util/handlebarsShortcuts",
-    "../util/templateConstants"
+    "../util/templateConstants",
+    "./webSocketController"
 ], function ($,
              Handlebars,
              Chart,
@@ -16,7 +17,8 @@ define([
              logAreaTemplate,
              chartWindowTemplate,
              HB,
-             TEMPLATE) {
+             TEMPLATE,
+             webSocketController) {
     function run(aChart) {
         // if (params.property)
         // render(params.property);
@@ -42,7 +44,7 @@ define([
 
         function bindEvents() {
             function runButtonEvent() {
-                $("#run-button").prop("disabled",true);
+                $("#run-button").prop("disabled", true);
                 const formIdString = "#main-form";
                 $.each(TEMPLATE.inputFields(), function (key) {
                     var pElem = $("#" + key + "-id");
@@ -59,16 +61,22 @@ define([
                     .done(function (data) {
                         $("#run-button-sign").text(data.status);
                         $("#run-button").prop("disabled", false);
+                        webSocketController.sendWsMessageRequest('stopLog');
                     });
                 $(formIdString).trigger("reset");
+                $("#log").val("");
+                webSocketController.sendWsMessageRequest('startLog')
             }
+            ////////////////////////////////////
             $("#run-button").click(function () {
                 runButtonEvent();
             });
             $("#toggle-chart-1").click(function () {
                 $("#myChart").toggle('slow');
             });
+            webSocketController.connectWs();
         }
+
         var drawChart = function (data) {
             var ctx = document.getElementById("myChart").getContext("2d");
             new Chart(ctx).Scatter(data, {
@@ -92,8 +100,8 @@ define([
             label: 'My First dataset',
             data: aChart.values
         }]);
-    }
 
+    }
 
 
     return {
