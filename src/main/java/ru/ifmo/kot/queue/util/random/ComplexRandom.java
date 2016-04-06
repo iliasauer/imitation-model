@@ -38,68 +38,9 @@ public class ComplexRandom {
      */
     public static final double u = 1.96;
 
-    private final double[] sequence;
-    private final double mean;
-    private final double variance;
-    private final double[] covariance;
-    private final double[] correlation;
-    private final double[] interval = new double[2];
 
     public enum Type {
         STANDARD, EXPONENTIAL
-    }
-
-    public ComplexRandom() {
-        this(SEED_1);
-    }
-
-    public ComplexRandom(Type type) {
-        this(SEED_1, type);
-    }
-
-    public ComplexRandom(final int seed) {
-        this(seed, Type.STANDARD);
-    }
-
-    public ComplexRandom(final int seed, Type type) {
-        switch (type) {
-            case EXPONENTIAL:
-                sequence = exponentialyDistributedRandomSequence(seed);
-                break;
-            default:
-                sequence = standardUniformlyDistributedRandomSequence(seed);
-        }
-        mean = mean(sequence);
-        variance = variance(sequence);
-        covariance = covariance(sequence);
-        correlation = correlation(sequence);
-        final double accuracy = accuracy(sequence);
-        interval[0] = mean - accuracy;
-        interval[1] = mean + accuracy;
-    }
-
-    public double[] sequence() {
-        return sequence;
-    }
-
-    public double mean() {
-        return mean;
-    }
-
-    public double variance() {
-        return variance;
-    }
-
-    public double[] covariance() {
-        return covariance;
-    }
-
-    public double[] correlation() {
-        return correlation;
-    }
-
-    public double[] interval() {
-        return interval;
     }
 
     public static double nextValue(final double number) {
@@ -272,13 +213,13 @@ public class ComplexRandom {
         return meanSquaredDisplacement(sequence) * u;
     }
 
-    public static double[] interval(double[] sequence) {
+    public static double[] confidenceInterval(double[] sequence) {
         final double mean = mean(sequence);
         final double accuracy = accuracy(sequence);
         return new double[]{mean - accuracy, mean + accuracy};
     }
 
-    public String sequenceToString(double[] sequence) {
+    public static String sequenceToString(double[] sequence) {
         StringBuilder builder = new StringBuilder();
         for (double num: sequence) {
             builder.append(num);
@@ -287,13 +228,4 @@ public class ComplexRandom {
         return builder.toString();
     }
 
-    @Override
-    public String toString() {
-        return "Sequence: " + sequenceToString(sequence) + "\n" +
-                "Mean: " + mean + "\n" +
-                "Variance: " + variance + "\n" +
-                "Covariance: " + sequenceToString(covariance) + "\n" +
-                "Correlation: " + sequenceToString(correlation) + "\n" +
-                "Interval: " + "[" + interval[0] + ";" + interval[1] + "]" + "\n";
-    }
 }

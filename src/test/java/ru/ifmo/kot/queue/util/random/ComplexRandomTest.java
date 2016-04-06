@@ -14,7 +14,7 @@ public class ComplexRandomTest {
     private static final double DOUBLE_DELTA = 0.00001;
     private static final int commonSeed = SEED_1;
     private static final double[] commonSequence =
-            standardUniformlyDistributedRandomSequence(commonSeed);
+            exponentialyDistributedRandomSequence(commonSeed);
 
     @Test
     public void checkGenerationOfValue() {
@@ -102,7 +102,7 @@ public class ComplexRandomTest {
 
     @Test
     public void checkInterval() {
-        final double[] actualInterval = interval(commonSequence);
+        final double[] actualInterval = confidenceInterval(commonSequence);
         System.out.println("Interval: [" + actualInterval[0] + ", " + actualInterval[1] + "]");
     }
 
@@ -120,15 +120,6 @@ public class ComplexRandomTest {
         System.out.println("Standard deviation: " + sd);
         System.out.println("Accuracy: " + accuracy);
         System.out.println("Z: " + z);
-    }
-
-    @Test
-    public void checkNonStaticStandardUniformlyDistributedRandomSequence() {
-        final ComplexRandom random = new ComplexRandom(SEED_1, Type.STANDARD);
-        assertEquals("The mean was calculated wrong",
-                new Mean().evaluate(random.sequence()), random.mean(), DOUBLE_DELTA);
-        assertEquals("The variance was calculated wrong",
-                new Variance().evaluate(random.sequence()), random.variance(), DOUBLE_DELTA);
     }
 
 //////////////////////auxiliary methods////////////////////////

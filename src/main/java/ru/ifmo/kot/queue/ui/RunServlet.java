@@ -42,7 +42,7 @@ public class RunServlet extends HttpServlet {
         final String workersParam = request.getParameter("workers-input");
         final String storageParam = request.getParameter("storage-input");
         final String disciplineParam = request.getParameter("discipline-select");
-        final String intervalParam = request.getParameter("interval-input");
+        final String intervalParam = request.getParameter("confidenceInterval-input");
         final String processParam = request.getParameter("process-input");
         final String runsParam = request.getParameter("runs-input");
         Map<String, String> responseMap = new HashMap<>();

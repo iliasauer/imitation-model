@@ -7,9 +7,9 @@ import java.util.List;
 public class Chart implements Serializable {
 
     public String name;
-    public List<Point> values;
+    public List<Object> values;
 
-    public Chart(String name, List<Point> values) {
+    public Chart(String name, List<Object> values) {
         this.name = name;
         this.values = values;
     }

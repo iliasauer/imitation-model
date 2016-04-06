@@ -25,18 +25,20 @@ public class ValueGenerationTest {
 
     @Test
     public void checkMeanOfRangeUniformlyDistributedRandomSequence() {
-        double[] sequence = ComplexRandom.rangeExponentialDistributedRandomSequence(value *
-                2);
-        double sqrOfValue = Math.pow(value, 2);
-        double mean = ComplexRandom.mean(sequence);
-        double variance = ComplexRandom.variance(sequence);
-        double deltaMean = round(((mean - value) / value), 4);
-        double deltaVariance = round(((variance - sqrOfValue) / sqrOfValue), 4);
+        double[] sequence = ComplexRandom.exponentialyDistributedRandomSequence();
+        final double sqrOfValue = Math.pow(value, 2);
+        final double mean = ComplexRandom.mean(sequence);
+        final double variance = ComplexRandom.variance(sequence);
+        final double deltaMean = round(((mean - value) / value), 4);
+        final double deltaVariance = round(((variance - sqrOfValue) / sqrOfValue), 4);
+        final double[] confidenceInterval = ComplexRandom.confidenceInterval(sequence);
         System.out.println("Value: " + value);
-        System.out.println("The mean estimation: " + mean
+        System.out.println("The mean estimation: " + round(mean, 4)
                 + " (delta = " + deltaMean + "%)");
-        System.out.println("The variance estimation: " + variance
+        System.out.println("The variance estimation: " + round(variance, 4)
                 + " (delta = " + deltaVariance + "%)");
+        System.out.println("The confidence interval: [" + round(confidenceInterval[0], 4) +
+        "; " + round(confidenceInterval[1], 4) + "]");
         Assert.assertEquals(value, mean, value * PERCENTAGE);
         Assert.assertEquals(sqrOfValue, variance, sqrOfValue * PERCENTAGE);
     }

@@ -8,9 +8,7 @@ import static java.lang.Math.pow;
 @SuppressWarnings("WeakerAccess") // for tests
 public class RandomAuditor {
 
-    private static final Logger LOGGER = LogManager.getLogger(RandomAuditor.class);
-
-    public double[] equalIntervals(final double minValue, final double maxValue,
+    public static double[] equalIntervals(final double minValue, final double maxValue,
                                   final int numberOfIntervals) {
 
         double[] intervals = new double[numberOfIntervals + 1];
@@ -23,16 +21,23 @@ public class RandomAuditor {
         return intervals;
     }
 
-    public double[] equalIntervalsWithStrugesRule(final double minValue, final double maxValue,
+    public static double[] equalIntervalsWithStrugesRule(final double minValue, final double
+            maxValue,
                                                   final int numberOfValues) {
-        return equalIntervals(minValue, maxValue, strugesRule(numberOfValues));
+        return equalIntervals(minValue, maxValue, strugesIntervalRule(numberOfValues));
     }
 
-    public double probabilityOfEqualIntervalHit(final double[] intervals) {
+    public static double[] equalIntervalsWithEmpiricRule(final double minValue, final double
+            maxValue,
+                                                  final int numberOfValues) {
+        return equalIntervals(minValue, maxValue, empiricIntervalRule(numberOfValues));
+    }
+
+    public static double probabilityOfEqualIntervalHit(final double[] intervals) {
         return (intervals[1] - intervals[0])/(intervals[intervals.length - 1] - intervals[0]);
     }
 
-    public int[] hits(final double[] sequence,
+    public static int[] hits(final double[] sequence,
                                   final double[] intervals) {
         int[] hits = new int[intervals.length - 1];
         for (int i = 0; i < hits.length; i++) {
@@ -48,9 +53,30 @@ public class RandomAuditor {
         return hits;
     }
 
+    public static double[] frequencyOfHits(final double[] sequence, final double[] intervals) {
+        int[] hits = hits(sequence, intervals);
+        int n = sequence.length;
+        double[] frequency = new double[hits.length];
+        for (int i = 0; i < hits.length; i++) {
+            frequency[i] = hits[i] / n;
+        }
+        return frequency;
+    }
+
+    public static double[] heightsOfBarRectangles(final double[] sequence,
+                                                  final double[] intervals) {
+        double[] frequency = frequencyOfHits(sequence, intervals);
+        double deltaX = intervals[1] - intervals[0];
+        double[] heights = new double[frequency.length];
+        for (int i = 0; i < heights.length; i++) {
+            heights[i] = frequency[i] / deltaX;
+        }
+        return heights;
+    }
+
     // Zi = ((ni - n * pi)^2) / (n * pi)
     // in this case pi is a constant
-    public double significanceCriteriaStatisticsOfEqualIntervals(
+    public static double significanceCriteriaStatisticsOfEqualIntervals(
             final double[] sequence,
             final double minValue, final double maxValue,
             final int numberOfIntervals) {
@@ -65,7 +91,7 @@ public class RandomAuditor {
         return z;
     }
 
-    public double significanceCriteriaStatisticsOfEqualIntervalsWithStrugesRule(
+    public static double significanceCriteriaStatisticsOfEqualIntervalsWithStrugesRule(
             final double[] sequence,
             final double minValue, final double maxValue,
             final int numberOfValues) {
@@ -81,11 +107,15 @@ public class RandomAuditor {
     }
 
     // The logarithm to base 2
-    private double lg(double num) {
+    private static double lg(double num) {
         return Math.log(num)/Math.log(2);
     }
 
-    public int strugesRule(int numberOfValues) {
+    public static int strugesIntervalRule(int numberOfValues) {
         return 1 + (int) (3.3 * lg(numberOfValues));
+    }
+
+    public static int empiricIntervalRule(int numberOfValues) {
+        return (int) (1.72 + Math.cbrt(numberOfValues));
     }
 }

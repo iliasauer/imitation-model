@@ -1,11 +1,15 @@
 package ru.ifmo.kot.queue.util.chart;
 
+import org.apache.commons.lang3.ArrayUtils;
 import ru.ifmo.kot.queue.util.random.ComplexRandom;
+import ru.ifmo.kot.queue.util.random.RandomAuditor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static ru.ifmo.kot.queue.util.random.ComplexRandom.*;
+import static ru.ifmo.kot.queue.util.random.RandomAuditor.*;
 
 public class Charts {
 
@@ -16,12 +20,18 @@ public class Charts {
         return indexChart("correlationChart", correlation(expSequence), 20);
     }
 
+    public static Chart distributionBarChart() {
+        double[] intervals = equalIntervalsWithEmpiricRule(0, 1, 1000);
+        Object[] heights = ArrayUtils.toObject(heightsOfBarRectangles(expSequence, intervals));
+        return new Chart("barChart", Arrays.asList(heights));
+    }
+
     public static Chart prevNextChart() {
         return nextElementChart("prevNextChart", expSequence);
     }
 
     private static Chart indexChart(String name, double[] sequence, final int numberOfValues) {
-        List<Point> chart = new ArrayList<>();
+        List<Object> chart = new ArrayList<>();
         for (int i = 0; i < numberOfValues; i++) {
             chart.add(new Point(i, sequence[i]));
         }
@@ -29,7 +39,7 @@ public class Charts {
     }
 
     private static Chart nextElementChart(String name, double[] sequence) {
-        List<Point> chart = new ArrayList<>();
+        List<Object> chart = new ArrayList<>();
         for (int i = 0; i < sequence.length - 1; i++) {
             chart.add(new Point(sequence[i], sequence[i + 1]));
         }

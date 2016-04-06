@@ -63,7 +63,7 @@ public class QueueSystem {
         handleNotCorrectIntParam(numberOfJobs, "The number of jobs");
         handleNotCorrectIntParam(numberOfWorkers, "The number of workers");
         handleNotCorrectIntParam(capacityOfStorage, "The capacity of the storage");
-        handleNotCorrectIntParam(avgInterval, "The average job entry interval");
+        handleNotCorrectIntParam(avgInterval, "The average job entry confidenceInterval");
         handleNotCorrectIntParam(avgProcessingTime, "The average job processing time");
     }
 

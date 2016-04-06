@@ -12,47 +12,48 @@ public class RandomAuditorTest {
 
     @Test
     public void checkIntervals() {
-        final double[] intervals = new RandomAuditor().equalIntervalsWithStrugesRule(0, 1,
+        final double[] intervals = RandomAuditor.equalIntervalsWithStrugesRule(0, 1,
                 TEST_SEQUENCE.length);
         printArray(intervals);
     }
 
     @Test
     public void checkHits() {
-        RandomAuditor randomAuditor = new RandomAuditor();
-        final double[] intervals = randomAuditor.equalIntervalsWithStrugesRule(0, 1,
+        final double[] intervals = RandomAuditor.equalIntervalsWithStrugesRule(0, 1,
                 TEST_SEQUENCE.length);
-        final int[] hits = randomAuditor.hits(TEST_SEQUENCE, intervals);
+        final int[] hits = RandomAuditor.hits(TEST_SEQUENCE, intervals);
         printArray(hits);
     }
 
     @Test
     public void checkProbability() {
-        RandomAuditor randomAuditor = new RandomAuditor();
-        final double[] intervals = randomAuditor.equalIntervals(0, 1, 4);
-        final double probability = randomAuditor.probabilityOfEqualIntervalHit(intervals);
+        final double[] intervals = RandomAuditor.equalIntervals(0, 1, 4);
+        final double probability = RandomAuditor.probabilityOfEqualIntervalHit(intervals);
         System.out.println("Probability: " + probability);
 
     }
 
     @Test
     public void checkSignificanceCriteriaStatistics() {
-        RandomAuditor randomAuditor = new RandomAuditor();
-        double z = randomAuditor.significanceCriteriaStatisticsOfEqualIntervalsWithStrugesRule(
+        double z = RandomAuditor.significanceCriteriaStatisticsOfEqualIntervalsWithStrugesRule(
                 TEST_SEQUENCE, 0, 1, TEST_SEQUENCE.length);
         System.out.println("Z: " + z);
     }
 
     @Test
     public void checkStrugesRule() {
-        RandomAuditor randomAuditor = new RandomAuditor();
         assertEquals("The Struges rule works incorrectly",
-                14, randomAuditor.strugesRule(16));
+                14, RandomAuditor.strugesIntervalRule(16));
+    }
+
+    @Test
+    public void fakeTest() {
+        printArray(ComplexRandom.exponentialyDistributedRandomSequence());
     }
 
     private void printArray(final double[] array) {
         for (final double each: array) {
-            System.out.print(each + " ");
+            System.out.println(each + " ");
         }
         System.out.println();
     }
