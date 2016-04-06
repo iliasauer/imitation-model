@@ -37,7 +37,7 @@ public class CommonWebSocket extends WebSocketAdapter {
         LOGGER.debug("The message received: " + message + ".");
         switch (message) {
             case "startLog":
-                executor.scheduleAtFixedRate(new Task(), 100, 200, TimeUnit
+                executor.scheduleAtFixedRate(new Task(), 100, 50, TimeUnit
                         .MILLISECONDS);
                 break;
             case "stopLog":

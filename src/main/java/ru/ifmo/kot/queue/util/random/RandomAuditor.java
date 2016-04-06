@@ -23,8 +23,13 @@ public class RandomAuditor {
         return intervals;
     }
 
+    public double[] equalIntervalsWithStrugesRule(final double minValue, final double maxValue,
+                                                  final int numberOfValues) {
+        return equalIntervals(minValue, maxValue, strugesRule(numberOfValues));
+    }
+
     public double probabilityOfEqualIntervalHit(final double[] intervals) {
-        return intervals[1] - intervals[0];
+        return (intervals[1] - intervals[0])/(intervals[intervals.length - 1] - intervals[0]);
     }
 
     public int[] hits(final double[] sequence,
@@ -50,6 +55,21 @@ public class RandomAuditor {
             final double minValue, final double maxValue,
             final int numberOfIntervals) {
         double[] intervals = equalIntervals(minValue, maxValue, numberOfIntervals);
+        double probabilityOfHit = probabilityOfEqualIntervalHit(intervals);
+        int[] hits = hits(sequence, intervals);
+        double z = 0;
+        double constantPart = sequence.length * probabilityOfHit;
+        for (int anIntervalHits : hits) {
+            z += pow((anIntervalHits - constantPart), 2) / constantPart;
+        }
+        return z;
+    }
+
+    public double significanceCriteriaStatisticsOfEqualIntervalsWithStrugesRule(
+            final double[] sequence,
+            final double minValue, final double maxValue,
+            final int numberOfValues) {
+        double[] intervals = equalIntervalsWithStrugesRule(minValue, maxValue, numberOfValues);
         double probabilityOfHit = probabilityOfEqualIntervalHit(intervals);
         int[] hits = hits(sequence, intervals);
         double z = 0;

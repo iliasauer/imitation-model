@@ -30,7 +30,7 @@ public class ComplexRandom {
     /**
      * the number of sequence values
      */
-    public static final int n = 1000;
+    public static final int n = 50_000;
 
     /**
      * the quantile of a standard normal distribution of order of "1 - α/2"
@@ -64,7 +64,7 @@ public class ComplexRandom {
     public ComplexRandom(final int seed, Type type) {
         switch (type) {
             case EXPONENTIAL:
-                sequence = exponentialRandomSequence(seed);
+                sequence = exponentialyDistributedRandomSequence(seed);
                 break;
             default:
                 sequence = standardUniformlyDistributedRandomSequence(seed);
@@ -118,7 +118,7 @@ public class ComplexRandom {
         return value / m;
     }
 
-    private double exponizedValue(final double value) {
+    private static double  exponizedValue(final double value, final double mean) {
         return  -mean * log(value);
     }
 
@@ -138,7 +138,7 @@ public class ComplexRandom {
     }
 
     public static double[] uniformlyDistributedRandomSequence() {
-        return uniformlyDistributedRandomSequence(SEED_1, a, m, n);
+        return uniformlyDistributedRandomSequence(SEED_1);
     }
 
     public static double[] standardUniformlyDistributedRandomSequence(
@@ -160,13 +160,63 @@ public class ComplexRandom {
         return standardUniformlyDistributedRandomSequence(SEED_1, a, m, n);
     }
 
-    public double[] exponentialRandomSequence(final int seed) {
-        double[] prevSequence = standardUniformlyDistributedRandomSequence(seed);
+    public static double[] exponentialyDistributedRandomSequence(final int seed, final int a,
+                                              final int m, final int n) {
+        double[] prevSequence = standardUniformlyDistributedRandomSequence(seed, a, m, n);
+        double mean = mean(prevSequence);
         double[] sequence = new double[n];
         for (int i = 0; i < n; i++) {
-            sequence[i] = exponizedValue(prevSequence[i]);
+            sequence[i] = exponizedValue(prevSequence[i], mean);
         }
         return sequence;
+    }
+
+    public static double[] exponentialyDistributedRandomSequence(final int seed) {
+        return exponentialyDistributedRandomSequence(seed, a, m, n);
+    }
+
+    public static double[] exponentialyDistributedRandomSequence() {
+        return exponentialyDistributedRandomSequence(SEED_1, a, m, n);
+    }
+
+    public static double[] rangeExponentialyDistributedRandomSequence(final int seed, final int
+            minValue, final int maxValue) {
+        double[] prevSequence = exponentialyDistributedRandomSequence(seed);
+        double[] sequence = new double[prevSequence.length];
+        int range = maxValue - minValue;
+        for (int i = 0; i < sequence.length; i++) {
+            sequence[i] = minValue + range * prevSequence[i];
+        }
+        return sequence;
+    }
+
+    public static double[] rangeExponentialyDistributedRandomSequence(final int
+                                                                                      minValue, final int maxValue) {
+        return rangeExponentialyDistributedRandomSequence(SEED_1, minValue, maxValue);
+    }
+
+    public static double[] rangeExponentialyDistributedRandomSequence(final int range) {
+        return rangeExponentialyDistributedRandomSequence(0, range);
+    }
+
+    public static double[] rangeUniformlyDistributedRandomSequence(final int seed, final int
+            minValue, final int maxValue) {
+        double[] prevSequence = standardUniformlyDistributedRandomSequence(seed);
+        double[] sequence = new double[prevSequence.length];
+        int range = maxValue - minValue;
+        for (int i = 0; i < sequence.length; i++) {
+            sequence[i] = minValue + range * prevSequence[i];
+        }
+        return sequence;
+    }
+
+    public static double[] rangeUniformlyDistributedRandomSequence(final int
+                                                                           minValue, final int maxValue) {
+        return rangeUniformlyDistributedRandomSequence(SEED_1, minValue, maxValue);
+    }
+
+    public static double[] rangeUniformlyDistributedRandomSequence(final int range) {
+        return rangeUniformlyDistributedRandomSequence(0, range);
     }
 
     public static double mean(double[] sequence) {

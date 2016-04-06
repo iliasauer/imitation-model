@@ -12,23 +12,34 @@ public class RandomAuditorTest {
 
     @Test
     public void checkIntervals() {
-        final double[] intervals = new RandomAuditor().equalIntervals(0, 1, 4);
+        final double[] intervals = new RandomAuditor().equalIntervalsWithStrugesRule(0, 1,
+                TEST_SEQUENCE.length);
         printArray(intervals);
     }
 
     @Test
     public void checkHits() {
         RandomAuditor randomAuditor = new RandomAuditor();
-        final double[] intervals = randomAuditor.equalIntervals(0, 1, 4);
+        final double[] intervals = randomAuditor.equalIntervalsWithStrugesRule(0, 1,
+                TEST_SEQUENCE.length);
         final int[] hits = randomAuditor.hits(TEST_SEQUENCE, intervals);
         printArray(hits);
     }
 
     @Test
+    public void checkProbability() {
+        RandomAuditor randomAuditor = new RandomAuditor();
+        final double[] intervals = randomAuditor.equalIntervals(0, 1, 4);
+        final double probability = randomAuditor.probabilityOfEqualIntervalHit(intervals);
+        System.out.println("Probability: " + probability);
+
+    }
+
+    @Test
     public void checkSignificanceCriteriaStatistics() {
         RandomAuditor randomAuditor = new RandomAuditor();
-        double z = randomAuditor.significanceCriteriaStatisticsOfEqualIntervals(
-                TEST_SEQUENCE, 0, 1, 4);
+        double z = randomAuditor.significanceCriteriaStatisticsOfEqualIntervalsWithStrugesRule(
+                TEST_SEQUENCE, 0, 1, TEST_SEQUENCE.length);
         System.out.println("Z: " + z);
     }
 
