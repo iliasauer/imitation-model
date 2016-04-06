@@ -1,8 +1,12 @@
 <div class="col-md-4">
-    <canvas id="myChart" width="400" height="400"></canvas>
+    {{#each prerunCharts}}
+        <canvas id="{{@key}}-id" class="chart-canvas" width="400" height="400"></canvas>
+    {{/each}}
 </div>
 <div class="col-md-2">
-    <button id="toggle-chart-1" class="btn btn-default" type="button">The next
-        value chart
+    {{#each prerunCharts}}
+    <button id="{{@key}}-button-id" class="chart-btn btn btn-default" type="button">
+        The {{this}} chart
     </button>
+    {{/each}}
 </div>

@@ -16,6 +16,11 @@ define(function() {
         }
     };
 
+    const PRERUN_CHARTS = {
+        "correlationChart": "correlation",
+        "prevNextChart": "next value"
+    };
+
     function inputFields() {
         return INPUT_FIELDS;
     }
@@ -24,8 +29,13 @@ define(function() {
         return SELECT_FIELDS;
     }
 
+    function prerunCharts() {
+        return PRERUN_CHARTS;
+    }
+
     return {
         inputFields: inputFields,
-        selectFields: selectFields
+        selectFields: selectFields,
+        prerunCharts: prerunCharts
     }
 });

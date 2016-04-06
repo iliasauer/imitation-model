@@ -6,8 +6,8 @@ require(["./requirejs/config"], function() {
         "./controllers/mainController"
         
     ], function($, mainController) {
-        $.get("/main", function (aChart) {
-            mainController.run(aChart);
+        $.get("/main", function (prerunChartArr) {
+            mainController.run(prerunChartArr);
         });
     });
 });

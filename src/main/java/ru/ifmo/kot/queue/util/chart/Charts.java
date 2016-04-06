@@ -5,32 +5,35 @@ import ru.ifmo.kot.queue.util.random.ComplexRandom;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.ifmo.kot.queue.util.random.ComplexRandom.*;
+
 public class Charts {
 
-    public static Metric correlationChart() {
-        return indexChart("correlationChart",
-                ComplexRandom.correlation(ComplexRandom.standardUniformlyDistributedRandomSequence()));
+    private static final double[] expSequence = exponentialyDistributedRandomSequence(SEED_1, a,
+            m, 1000);
+
+    public static Chart correlationChart() {
+        return indexChart("correlationChart", correlation(expSequence), 20);
     }
 
-    public static Metric prevNextChart() {
-        return nextElementChart("prevNextChart",
-                ComplexRandom.standardUniformlyDistributedRandomSequence());
+    public static Chart prevNextChart() {
+        return nextElementChart("prevNextChart", expSequence);
     }
 
-    private static Metric indexChart(String name, double[] sequence) {
+    private static Chart indexChart(String name, double[] sequence, final int numberOfValues) {
         List<Point> chart = new ArrayList<>();
-        for (int i = 0; i < sequence.length; i++) {
+        for (int i = 0; i < numberOfValues; i++) {
             chart.add(new Point(i, sequence[i]));
         }
-        return new Metric(name, chart);
+        return new Chart(name, chart);
     }
 
-    private static Metric nextElementChart(String name, double[] sequence) {
+    private static Chart nextElementChart(String name, double[] sequence) {
         List<Point> chart = new ArrayList<>();
         for (int i = 0; i < sequence.length - 1; i++) {
             chart.add(new Point(sequence[i], sequence[i + 1]));
         }
-        return new Metric(name, chart);
+        return new Chart(name, chart);
     }
 
 }

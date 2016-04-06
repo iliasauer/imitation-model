@@ -19,13 +19,13 @@ define([
              HB,
              TEMPLATE,
              webSocketController) {
-    function run(aChart) {
+    function run(prerunChartArr) {
         // if (params.property)
         // render(params.property);
-        render(aChart);
+        render(prerunChartArr);
     }
 
-    function render(aChart) {
+    function render(prerunChartArr) {
         function renderApp() {
             HB.compileAndInsert('app', 'beforeend', appTemplate, {
                 inputFields: TEMPLATE.inputFields(),
@@ -35,14 +35,16 @@ define([
         }
 
         function renderLogArea() {
-            HB.compileAndInsert('init-block', 'afterend', logAreaTemplate, {numberOfJobs: ""});
+            HB.compileAndInsert('init-block', 'afterend', logAreaTemplate);
         }
 
         function renderChartWindow() {
-            HB.compileAndInsert('main-block', 'afterend', chartWindowTemplate, {numberOfJobs: ""});
+            HB.compileAndInsert('main-block', 'afterend', 
+                chartWindowTemplate, {prerunCharts: TEMPLATE.prerunCharts()});
         }
 
         function bindEvents() {
+
             function runButtonEvent() {
                 $("#run-button").prop("disabled", true);
                 const formIdString = "#main-form";
@@ -62,6 +64,7 @@ define([
                         $("#run-button-sign").text(data.status);
                         $("#run-button").prop("disabled", false);
                         webSocketController.sendWsMessageRequest('stopLog');
+
                     });
                 $(formIdString).trigger("reset");
                 $("#log").val("");
@@ -71,14 +74,20 @@ define([
             $("#run-button").click(function () {
                 runButtonEvent();
             });
-            $("#toggle-chart-1").click(function () {
-                $("#myChart").toggle('slow');
+            $.each(TEMPLATE.prerunCharts(), function (objKey, objValue) {
+                const buttonId = "#" + objKey + "-button-id";
+                const chartId = "#" + objKey + "-id";
+                $(buttonId).click(function () {
+                    $(chartId).toggle('slow');
+                });
+                $(chartId).toggle(1);
             });
+
             webSocketController.connectWs();
         }
 
-        var drawChart = function (data) {
-            var ctx = document.getElementById("myChart").getContext("2d");
+        function drawPointChart(id, data) {
+            var ctx = document.getElementById(id).getContext("2d");
             new Chart(ctx).Scatter(data, {
                 datasetStroke: false,
                 responsive: true,
@@ -91,16 +100,30 @@ define([
                     }]
                 }
             });
-        };
+        }
+
+        function drawPrerunCharts(chartArr) {
+            $.each(TEMPLATE.prerunCharts(), function (objKey, objValue) {
+                var id = objKey + "-id";
+                var name;
+                var values;
+                $.each(chartArr, function (arrIndex, arrValue) {
+                    if (arrValue.name == objKey) {
+                        name = arrValue.name;
+                        values = arrValue.values;
+                    }
+                });
+                drawPointChart(id, [{
+                    label: name,
+                    data: values
+                }]);
+            });
+        }
         renderApp();
         renderLogArea();
         renderChartWindow();
         bindEvents();
-        drawChart([{
-            label: 'My First dataset',
-            data: aChart.values
-        }]);
-
+        drawPrerunCharts(prerunChartArr);
     }
 
 

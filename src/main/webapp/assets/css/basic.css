@@ -8,3 +8,14 @@ body {
     display: inline-block !important;
     padding-left: 10px !important;
 }
+.chart-btn {
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+.chart-canvas {
+    max-width: 600px;
+    max-height: 600px;
+}
+.invisible {
+    display: none;
+}

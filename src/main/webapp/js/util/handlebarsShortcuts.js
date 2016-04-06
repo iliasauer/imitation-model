@@ -16,6 +16,6 @@ define(["jquery", "handlebars"], function ($, Handlebars) {
     return {
         compile: compile,
         insert: insert,
-        compileAndInsert: compileAndInsert,
+        compileAndInsert: compileAndInsert
     }
 });

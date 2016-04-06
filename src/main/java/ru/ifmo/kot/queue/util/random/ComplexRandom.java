@@ -244,7 +244,7 @@ public class ComplexRandom {
         final int n = prevSequence.length;
         final double mean = mean(prevSequence);
         double[] sequence = new double[n - 1];
-        for (int j = 1; j < sequence.length + 1; j++) {
+        for (int j = 1; j <= (n - 1); j++) {
             double sum = 0;
             for (int i = 0; i < n - j; i++) {
                 sum += (prevSequence[i] - mean) * (prevSequence[i + j] - mean);
