@@ -72,6 +72,5 @@ public class QueueSystem {
         engine.shutdown();
         engine = null;
         Job.resetJobCounter();
-        Job.resetLogger();
     }
 }

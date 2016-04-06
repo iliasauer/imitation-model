@@ -25,13 +25,13 @@ public class Job implements Runnable {
         runsCounter = 1;
     }
 
-    public static void resetLogger() {
+    private static void resetLogger() {
         LOCAL_LOGGER.setLength(0);
     }
 
-
     public static String getLog() {
         String log = LOCAL_LOGGER.toString();
+        resetLogger();
         return log;
     }
 
@@ -59,7 +59,7 @@ public class Job implements Runnable {
         printStateDescription(state);
     }
 
-    public void reject() {
+    void reject() {
         state = State.REJECTED;
         printStateDescription(state);
     }
@@ -73,12 +73,12 @@ public class Job implements Runnable {
 
     private void printStateDescription(State state) {
 //		System.out.println(getStateDescription(state));
-        LOGGER.info(getStateDescription(state));
         if (number() == 1 && state.equals(State.OPEN)) {
             LOCAL_LOGGER.append("The run #").append(runsCounter).append(".\n");
         }
         LOCAL_LOGGER.append(dateFormat.format(System.currentTimeMillis())).append(" - ")
                 .append(getStateDescription(state)).append("\n");
+        LOGGER.info(getStateDescription(state));
     }
 
     private long number;

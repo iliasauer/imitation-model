@@ -20,9 +20,10 @@ public class CommonWebSocket extends WebSocketAdapter {
 
     private class Task implements Runnable {
         @Override
-        public void run() {
-            sendMessage(Job.getLog());
-            Job.resetLogger();
+        public synchronized void run() {
+            String log = Job.getLog();
+            if (!log.isEmpty())
+            sendMessage(log);
         }
     }
 
