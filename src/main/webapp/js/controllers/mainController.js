@@ -1,129 +1,102 @@
 define([
     "jquery",
-    "handlebars",
     "Chart",
     "Scatter",
     "text!../../templates/app.hbs",
     "text!../../templates/logArea.hbs",
     "text!../../templates/chartWindow.hbs",
-    "../util/handlebarsShortcuts",
-    "../util/templateConstants",
+    "../util/handlebarsUtil",
+    "../util/templateUtil",
+    "../util/cssUtil",
+    "../util/chartUtil",
     "./webSocketController"
 ], function ($,
-             Handlebars,
              Chart,
              Scatter,
              appTemplate,
              logAreaTemplate,
              chartWindowTemplate,
-             HB,
-             TEMPLATE,
+             hbUtil,
+             templateUtil,
+             cssUtil,
+             chartUtil,
              webSocketController) {
+
+    const jqId = templateUtil.jqId;
+    const jqElem = templateUtil.jqElem;
+
     function run(prerunChartArr) {
-        // if (params.property)
-        // render(params.property);
         render(prerunChartArr);
     }
 
     function render(prerunChartArr) {
         function renderApp() {
-            HB.compileAndInsert('app', 'beforeend', appTemplate, {
-                inputFields: TEMPLATE.inputFields(),
-                selectFields: TEMPLATE.selectFields()
+            hbUtil.compileAndInsertInside(jqId(['app']), appTemplate, {
+                inputFields: templateUtil.inputFields(),
+                selectFields: templateUtil.selectFields()
             });
-            $("#start-over-button").hide();
+            cssUtil.hide(jqId(['start', 'over', 'button']));
         }
 
         function renderLogArea() {
-            HB.compileAndInsert('init-block', 'afterend', logAreaTemplate);
+            hbUtil.compileAndInsertAfter(jqId(['init', 'block']), logAreaTemplate);
         }
 
         function renderChartWindow() {
-            HB.compileAndInsert('main-block', 'afterend', 
-                chartWindowTemplate, {prerunCharts: TEMPLATE.prerunCharts()});
+            hbUtil.compileAndInsertAfter(jqId(['main', 'block']), chartWindowTemplate,
+                {prerunCharts: templateUtil.prerunCharts()});
         }
 
         function bindEvents() {
 
+            const runButtonId = jqId(['run', 'button']);
+            
             function runButtonEvent() {
-                $("#run-button").prop("disabled", true);
-                const formIdString = "#main-form";
-                $.each(TEMPLATE.inputFields(), function (key) {
-                    var pElem = $("#" + key + "-id");
-                    var inputElem = $("#" + key + "-input-id");
-                    pElem.text(pElem.text().split(':')[0] + ": " + inputElem.val());
-                });
-                $.each(TEMPLATE.selectFields(), function (key) {
-                    var pElem = $("#" + key + "-id");
-                    var selectElem = $("#" + key + "-select-id");
-                    pElem.text(pElem.text().split(':')[0] + ": " + selectElem.val());
-                });
-                $("#run-button-sign").text("Wait...");
-                $.post("/run", $(formIdString).serialize())
-                    .done(function (data) {
-                        $("#run-button-sign").text(data.status);
-                        $("#run-button").prop("disabled", false);
-                        webSocketController.sendWsMessageRequest('stopLog');
-
+                cssUtil.disable(jqId(['run', 'button']));
+                function fillSuitableParagraphs(fieldTemplateObj, fieldType) {
+                    $.each(fieldTemplateObj, function (key) {
+                        const pElem = jqElem([key, 'id']);
+                        const fieldElem = jqElem([key, fieldType, 'id']);
+                        pElem.text(pElem.text().split(':')[0] + ": " + fieldElem.val());
                     });
-                $(formIdString).trigger("reset");
-                $("#log").val("");
+                }
+                fillSuitableParagraphs(templateUtil.inputFields(), templateUtil.fieldTypes().INPUT);
+                fillSuitableParagraphs(templateUtil.selectFields(), templateUtil.fieldTypes().SELECT);
+                
+                const runButtonSignId = jqId(['run', 'button', 'sign']);
+                const formId = jqId(['main', 'form']);
+                
+                $(runButtonSignId).text('Wait...');
+                $.post("/run", $(formId).serialize())
+                    .done(function (data) {
+                        $(runButtonSignId).text(data.status);
+                        cssUtil.enable(runButtonId);
+                        webSocketController.sendWsMessageRequest('stopLog');
+                    });
+                $(formId).trigger('reset');
+                $(jqId(['log'])).val('');
                 webSocketController.sendWsMessageRequest('startLog')
             }
             ////////////////////////////////////
-            $("#run-button").click(function () {
+            $(runButtonId).click(function () {
                 runButtonEvent();
             });
-            $.each(TEMPLATE.prerunCharts(), function (objKey, objValue) {
-                const buttonId = "#" + objKey + "-button-id";
-                const chartId = "#" + objKey + "-id";
+            $.each(templateUtil.prerunCharts(), function (objKey) {
+                const buttonId = jqId([objKey, 'button', 'id']);
+                const chartId = jqId([objKey, 'id']);
                 $(buttonId).click(function () {
                     $(chartId).toggle('slow');
                 });
                 $(chartId).toggle(1);
             });
-
-            webSocketController.connectWs();
         }
 
-        function drawPointChart(id, data) {
-            var ctx = document.getElementById(id).getContext("2d");
-            new Chart(ctx).Scatter(data, {
-                datasetStroke: false,
-                responsive: true,
-                hoverMode: 'single',
-                scales: {
-                    xAxes: [{
-                        gridLines: {
-                            zeroLineColor: "rgba(0,0,0,1)"
-                        }
-                    }]
-                }
-            });
-        }
-
-        function drawPrerunCharts(chartArr) {
-            $.each(TEMPLATE.prerunCharts(), function (objKey, objValue) {
-                var id = objKey + "-id";
-                var name;
-                var values;
-                $.each(chartArr, function (arrIndex, arrValue) {
-                    if (arrValue.name == objKey) {
-                        name = arrValue.name;
-                        values = arrValue.values;
-                    }
-                });
-                drawPointChart(id, [{
-                    label: name,
-                    data: values
-                }]);
-            });
-        }
         renderApp();
         renderLogArea();
         renderChartWindow();
         bindEvents();
-        drawPrerunCharts(prerunChartArr);
+        webSocketController.connectWs();
+        chartUtil.drawPrerunCharts(prerunChartArr);
     }
 
 

@@ -6,17 +6,9 @@ define([
     "text!../../templates/app.hbs",
     "text!../../templates/logArea.hbs",
     "text!../../templates/chartWindow.hbs",
-    "../util/handlebarsShortcuts",
-    "../util/templateConstants"
-], function ($,
-             Handlebars,
-             Chart,
-             Scatter,
-             appTemplate,
-             logAreaTemplate,
-             chartWindowTemplate,
-             HB,
-             TEMPLATE) {
+    "../util/handlebarsUtil",
+    "../util/templateUtil"
+], function ($) {
 
     const webSocketUrl = "ws://127.0.0.1:8080/logs";
     var ws;
