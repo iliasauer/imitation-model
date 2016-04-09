@@ -3,6 +3,7 @@ package ru.ifmo.kot.queue.util.random;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static ru.ifmo.kot.queue.util.random.RandomAuditor.*;
 
 public class RandomAuditorTest {
 
@@ -12,38 +13,42 @@ public class RandomAuditorTest {
 
     @Test
     public void checkIntervals() {
-        final double[] intervals = RandomAuditor.equalIntervalsWithStrugesRule(0, 1,
+        final double[] intervals = equalIntervalsWithStrugesRule(0, 1,
                 TEST_SEQUENCE.length);
         printArray(intervals);
     }
 
     @Test
     public void checkHits() {
-        final double[] intervals = RandomAuditor.equalIntervalsWithStrugesRule(0, 1,
+        final double[] intervals = equalIntervalsWithStrugesRule(0, 1,
                 TEST_SEQUENCE.length);
-        final int[] hits = RandomAuditor.hits(TEST_SEQUENCE, intervals);
+        final int[] hits = hits(TEST_SEQUENCE, intervals);
         printArray(hits);
     }
 
     @Test
     public void checkProbability() {
-        final double[] intervals = RandomAuditor.equalIntervals(0, 1, 4);
-        final double probability = RandomAuditor.probabilityOfEqualIntervalHit(intervals);
+        final double[] intervals = equalIntervals(0, 1, 4);
+        final double probability = probabilityOfEqualIntervalHit(intervals);
         System.out.println("Probability: " + probability);
 
     }
 
     @Test
     public void checkSignificanceCriteriaStatistics() {
-        double z = RandomAuditor.significanceCriteriaStatisticsOfEqualIntervalsWithStrugesRule(
-                TEST_SEQUENCE, 0, 1, TEST_SEQUENCE.length);
-        System.out.println("Z: " + z);
+        final int numberOfIntervals = strugesIntervalRule(TEST_SEQUENCE.length);
+        final double z = significanceCriteriaStatisticsOfEqualIntervals(TEST_SEQUENCE, 0, 1,
+                        numberOfIntervals);
+        double chi2quantile = chiSquaredDistributionQuantile(numberOfIntervals - 1);
+        System.out.println("Z: " + round(z, 4));
+        System.out.println("chi^2 quantile: " + round(chi2quantile, 4));
+        assertTrue(z < chi2quantile);
     }
 
     @Test
     public void checkStrugesRule() {
         assertEquals("The Struges rule works incorrectly",
-                14, RandomAuditor.strugesIntervalRule(16));
+                14, strugesIntervalRule(16));
     }
 
 
@@ -59,6 +64,14 @@ public class RandomAuditorTest {
             System.out.print(each + " ");
         }
         System.out.println();
+    }
+
+    private static double round(final double value, final int numberOfDigits) {
+        double rounder = 1.0;
+        for (int i = 0; i < numberOfDigits; i++) {
+            rounder *= 10.0;
+        }
+        return Math.round(value * rounder) / rounder;
     }
 
 }

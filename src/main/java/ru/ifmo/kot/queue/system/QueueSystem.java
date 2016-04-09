@@ -6,7 +6,6 @@ import ru.ifmo.kot.queue.system.engine.Engine;
 import ru.ifmo.kot.queue.system.job.Job;
 import ru.ifmo.kot.queue.system.storage.Discipline;
 import ru.ifmo.kot.queue.util.random.RandomGenerator;
-import ru.ifmo.kot.queue.util.random.SimpleRandom;
 
 import java.util.ArrayList;
 import java.util.List;
