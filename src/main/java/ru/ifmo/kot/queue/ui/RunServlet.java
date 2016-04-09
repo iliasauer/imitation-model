@@ -9,6 +9,8 @@ import org.eclipse.jetty.http.MimeTypes;
 import ru.ifmo.kot.queue.CliRunner;
 import ru.ifmo.kot.queue.system.storage.StorageFactory;
 import ru.ifmo.kot.queue.system.storage.Discipline;
+import ru.ifmo.kot.queue.util.random.ComplexRandom;
+import ru.ifmo.kot.queue.util.random.RandomGenerator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,6 +36,7 @@ public class RunServlet extends HttpServlet {
     private int interval = 0;
     private int process = 0;
     private int runs = 0;
+    private int seed = 0;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -45,10 +48,12 @@ public class RunServlet extends HttpServlet {
         final String intervalParam = request.getParameter("interval-input");
         final String processParam = request.getParameter("process-input");
         final String runsParam = request.getParameter("runs-input");
+        final String seedParam = request.getParameter("seed-input");
         Map<String, String> responseMap = new HashMap<>();
         if (validateParams(jobsParam, workersParam, storageParam,
-                disciplineParam, intervalParam, processParam, runsParam)) {
-            new CliRunner(jobs, workers, storage, discipline, interval, process, runs).run();
+                disciplineParam, intervalParam, processParam,
+                runsParam, seedParam) && validateSeed(seedParam)) {
+            new CliRunner(jobs, workers, storage, discipline, interval, process, runs, seed).run();
             responseMap.put("status", "All runs finished.");
         } else {
             responseMap.put("status", "Parameters are invalid.");
@@ -88,4 +93,19 @@ public class RunServlet extends HttpServlet {
         }
         return true;
     }
+
+    private boolean validateSeed(String seedParam) {
+        if (seedParam.isEmpty()) {
+            seed = ComplexRandom.SEED_1;
+        } else {
+            try {
+                seed = Integer.parseInt(seedParam);
+            } catch (NumberFormatException e) {
+                LOGGER.error("Failed to parse parameter");
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

@@ -13,7 +13,7 @@ import static org.junit.runners.Parameterized.*;
 @RunWith(value = Parameterized.class)
 public class ValueGenerationTest {
 
-    private static final double PERCENTAGE = 0.01;
+    private static final double PERCENTAGE = 0.05;
 
     @Parameters
     public static Iterable data() {
@@ -25,7 +25,7 @@ public class ValueGenerationTest {
 
     @Test
     public void checkMeanOfRangeUniformlyDistributedRandomSequence() {
-        double[] sequence = ComplexRandom.exponentialyDistributedRandomSequence();
+        double[] sequence = ComplexRandom.rangeExponentialyDistributedRandomSequence(value * 2);
         final double sqrOfValue = Math.pow(value, 2);
         final double mean = ComplexRandom.mean(sequence);
         final double variance = ComplexRandom.variance(sequence);

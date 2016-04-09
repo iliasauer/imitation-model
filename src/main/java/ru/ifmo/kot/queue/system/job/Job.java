@@ -106,9 +106,9 @@ public class Job implements Runnable {
     public void run() {
         this.start();
         try {
-            TimeUnit.MILLISECONDS.sleep(workComplexity); //TODO TURN BACK!!!
-        } catch (InterruptedException e) { // todo try to replace
-            e.printStackTrace();
+            TimeUnit.SECONDS.sleep(workComplexity);
+        } catch (InterruptedException e) {
+            LOGGER.error("The internal server error");
         }
         this.resolve();
         this.close();

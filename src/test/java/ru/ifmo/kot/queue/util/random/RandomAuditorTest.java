@@ -46,10 +46,6 @@ public class RandomAuditorTest {
                 14, RandomAuditor.strugesIntervalRule(16));
     }
 
-    @Test
-    public void fakeTest() {
-        printArray(ComplexRandom.exponentialyDistributedRandomSequence());
-    }
 
     private void printArray(final double[] array) {
         for (final double each: array) {

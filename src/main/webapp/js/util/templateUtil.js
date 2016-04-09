@@ -12,7 +12,8 @@ define(['jquery'],
             'storage': 'storage capacity',
             'interval': 'average job entry interval',
             'process': 'average job processing time',
-            'runs': 'number of runs'
+            'runs': 'number of runs',
+            'seed': 'generator seed (optional)'
         };
 
         const SELECT_FIELD = {

@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import ru.ifmo.kot.queue.system.engine.Engine;
 import ru.ifmo.kot.queue.system.job.Job;
 import ru.ifmo.kot.queue.system.storage.Discipline;
+import ru.ifmo.kot.queue.util.random.RandomGenerator;
 import ru.ifmo.kot.queue.util.random.SimpleRandom;
 
 import java.util.ArrayList;
@@ -21,18 +22,22 @@ public class QueueSystem {
 
     public static void run(int numberOfJobs, int numberOfWorkers,
                            int capacityOfStorage, Discipline discipline,
-                           int avgInterval, int avgProcessingTime) {
+                           int avgInterval, int avgProcessingTime,
+                           RandomGenerator.Builder generatorBuilder) {
         engine = new Engine(numberOfWorkers, capacityOfStorage, discipline);
+        generatorBuilder.setGoal(avgInterval);
+        RandomGenerator intervalGenerator = generatorBuilder.build();
+        generatorBuilder.setGoal(avgProcessingTime);
+        RandomGenerator processGenerator = generatorBuilder.build();
+        checkParams(numberOfJobs, numberOfWorkers, capacityOfStorage,
+                avgInterval, avgProcessingTime);
         int counter = 0;
         LOGGER.info("The system starts running.");
-        avgProcessingTime = avgProcessingTime * 2 * 10;
-        avgInterval = avgInterval * 2 * 10;
         List<Future<?>> futures = new ArrayList<>();
         while (counter < numberOfJobs) {
-            futures.add(engine.submit(new Job(SimpleRandom.nextInt
-                    (avgProcessingTime))));
+            futures.add(engine.submit(new Job(intervalGenerator.nextInt())));
             try {
-                TimeUnit.MILLISECONDS.sleep((long) SimpleRandom.nextInt(avgInterval)); // todo TURN BACK!!!
+                TimeUnit.SECONDS.sleep((long) processGenerator.nextInt());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -63,7 +68,7 @@ public class QueueSystem {
         handleNotCorrectIntParam(numberOfJobs, "The number of jobs");
         handleNotCorrectIntParam(numberOfWorkers, "The number of workers");
         handleNotCorrectIntParam(capacityOfStorage, "The capacity of the storage");
-        handleNotCorrectIntParam(avgInterval, "The average job entry confidenceInterval");
+        handleNotCorrectIntParam(avgInterval, "The average job entry interval");
         handleNotCorrectIntParam(avgProcessingTime, "The average job processing time");
     }
 

@@ -6,14 +6,16 @@ public class RandomGenerator {
 
     private static final int minValue = 0;
 
-    private int goal;
-    private int range;
     private double prevValue;
+    private int range;
 
-    public RandomGenerator(final int seed, final int goal) {
+    private RandomGenerator(final int seed, final int goal) {
         this.prevValue = seed;
-        this.goal = goal;
-        this.range = (goal * 2) - minValue;
+        this.range = range(goal);
+    }
+
+    private int range(final int goal) {
+        return (goal * 2) - minValue;
     }
 
     private double nextDouble() {
@@ -27,5 +29,33 @@ public class RandomGenerator {
         return (int) nextDouble();
     }
 
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        // default values
+        private int seed = ComplexRandom.SEED_1;
+        private int goal = 60;
+
+        private Builder() {
+        }
+
+        public Builder setSeed(final int seed) {
+            this.seed = seed;
+            return this;
+        }
+
+        public Builder setGoal(final int goal) {
+            this.goal = goal;
+            return this;
+        }
+
+        public RandomGenerator build() {
+            return new RandomGenerator(seed, goal);
+        }
+
+    }
 
 }

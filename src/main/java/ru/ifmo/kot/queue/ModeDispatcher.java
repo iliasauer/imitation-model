@@ -29,6 +29,7 @@ public class ModeDispatcher {
             case 0:
             case 6:
             case 7:
+            case 8:
                 try {
                     CliRunner.start(args);
                 } catch (IllegalArgumentException e) {
