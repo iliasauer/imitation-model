@@ -1,8 +1,5 @@
 package ru.ifmo.kot.queue.util.random;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import static java.lang.Math.pow;
 
 @SuppressWarnings("WeakerAccess") // for tests
