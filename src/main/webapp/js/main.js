@@ -2,11 +2,11 @@
 require(["./requirejs/config"], function() {
     //  App entry point
     require([
-        "jquery",
-        "./controllers/mainController"
+        'jquery',
+        './controllers/mainController'
         
     ], function($, mainController) {
-        $.get("/main", function (prerunChartArr) {
+        $.get('/main', function (prerunChartArr) {
             mainController.run(prerunChartArr);
         });
     });
