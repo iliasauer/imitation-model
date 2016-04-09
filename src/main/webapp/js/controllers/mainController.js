@@ -50,9 +50,11 @@ define([
         function bindEvents() {
 
             const runButtonId = jqId(['run', 'button']);
+            const runButtonSignId = jqId(['run', 'button', 'sign']);
+            const formId = jqId(['main', 'form']);
             
             function runButtonEvent() {
-                cssUtil.disable(jqId(['run', 'button']));
+                cssUtil.disable(runButtonId);
                 function fillSuitableParagraphs(fieldTemplateObj, fieldType) {
                     $.each(fieldTemplateObj, function (key) {
                         const pElem = jqElem([key, 'id']);
@@ -62,9 +64,6 @@ define([
                 }
                 fillSuitableParagraphs(templateUtil.inputFields(), templateUtil.fieldTypes().INPUT);
                 fillSuitableParagraphs(templateUtil.selectFields(), templateUtil.fieldTypes().SELECT);
-                
-                const runButtonSignId = jqId(['run', 'button', 'sign']);
-                const formId = jqId(['main', 'form']);
                 
                 $(runButtonSignId).text('Wait...');
                 $.post("/run", $(formId).serialize())
