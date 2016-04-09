@@ -29,9 +29,10 @@ public class MainServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<Chart> chartList = new ArrayList<>();
+        List<? super Chart> chartList = new ArrayList<>();
         chartList.add(Charts.correlationChart());
         chartList.add(Charts.prevNextChart());
+        chartList.add(Charts.distributionBarChart());
         String json = MAPPER.writeValueAsString(chartList);
         response.setContentType(MimeTypes.Type.APPLICATION_JSON.toString());
         response.getWriter().write(json);

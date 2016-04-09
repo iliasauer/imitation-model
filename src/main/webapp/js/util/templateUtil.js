@@ -23,7 +23,8 @@ define(function() {
 
     const PRERUN_CHART = {
         'correlationChart': 'correlation',
-        'prevNextChart': 'next value'
+        'prevNextChart': 'next value',
+        'barChart': 'histogram of the distribution'
     };
 
     function fieldTypes() {

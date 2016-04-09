@@ -17,6 +17,7 @@ define(['jquery',
               chartUtil,
               webSocketController) {
 
+        const plainId = templateUtil.plainId;
         const jqId = templateUtil.jqId;
         const jqElem = templateUtil.jqElem;
 
@@ -93,6 +94,10 @@ define(['jquery',
             bindEvents();
             webSocketController.connectWs();
             chartUtil.drawPrerunCharts(prerunChartArr);
+            const barChartObj = prerunChartArr[2];
+            const barChartId = templateUtil.prerunCharts()
+            chartUtil.drawBarChart(plainId(['barChart','id']),
+                barChartObj.intervalsLabels, 'histogram', barChartObj.values, '', []);
         }
 
 

@@ -20,10 +20,14 @@ public class Charts {
         return indexChart("correlationChart", correlation(expSequence), 20);
     }
 
-    public static Chart distributionBarChart() {
+    public static BarChart distributionBarChart() {
         double[] intervals = equalIntervalsWithEmpiricRule(0, 1, 1000);
-        Object[] heights = ArrayUtils.toObject(heightsOfBarRectangles(expSequence, intervals));
-        return new Chart("barChart", Arrays.asList(heights));
+        double[] intervalsLabels = new double[intervals.length - 1];
+        System.arraycopy(intervals, 1, intervalsLabels, 0, intervalsLabels.length);
+        double[] heights = heightsOfBarRectangles(expSequence, intervals);
+        Object[] intervalsLabelsObjArr = ArrayUtils.toObject(intervalsLabels);
+        Object[] heightsObjArr = ArrayUtils.toObject(heights);
+        return new BarChart("barChart", Arrays.asList(intervalsLabelsObjArr), Arrays.asList(heightsObjArr));
     }
 
     public static Chart prevNextChart() {

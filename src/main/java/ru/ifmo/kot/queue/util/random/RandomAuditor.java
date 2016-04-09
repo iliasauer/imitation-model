@@ -58,7 +58,7 @@ public class RandomAuditor {
         int n = sequence.length;
         double[] frequency = new double[hits.length];
         for (int i = 0; i < hits.length; i++) {
-            frequency[i] = hits[i] / n;
+            frequency[i] = (double) hits[i] / n;
         }
         return frequency;
     }
