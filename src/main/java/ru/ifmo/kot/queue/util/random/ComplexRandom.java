@@ -59,7 +59,7 @@ public class ComplexRandom {
         return value / m;
     }
 
-    private static double  exponizedValue(final double value, final double mean) {
+    public static double  exponizedValue(final double value, final double mean) {
         return  -mean * log(value);
     }
 
