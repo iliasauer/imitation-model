@@ -33,6 +33,7 @@ public class MainServlet extends HttpServlet {
         chartList.add(Charts.correlationChart());
         chartList.add(Charts.prevNextChart());
         chartList.add(Charts.distributionBarChart());
+        chartList.add(Charts.exponentialDistributionDensity());
         String json = MAPPER.writeValueAsString(chartList);
         response.setContentType(MimeTypes.Type.APPLICATION_JSON.toString());
         response.getWriter().write(json);

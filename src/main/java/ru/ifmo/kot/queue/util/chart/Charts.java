@@ -1,8 +1,6 @@
 package ru.ifmo.kot.queue.util.chart;
 
 import org.apache.commons.lang3.ArrayUtils;
-import ru.ifmo.kot.queue.util.random.ComplexRandom;
-import ru.ifmo.kot.queue.util.random.RandomAuditor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,19 +13,36 @@ public class Charts {
 
     private static final double[] expSequence = exponentialyDistributedRandomSequence(SEED_1, a,
             m, 1000);
+    private static final double[] intervals = equalIntervalsWithEmpiricRule(0, 1, 1000);
+
+    private static List<Object> valuesAsList(double[] values) {
+        Object[] objArr = ArrayUtils.toObject(values);
+        return Arrays.asList(objArr);
+    }
+
+    private static double exponentialDistributionDensityAtPoint(double x) {
+        return Math.pow(Math.E, -x);
+    }
 
     public static Chart correlationChart() {
         return indexChart("correlationChart", correlation(expSequence), 20);
     }
 
     public static BarChart distributionBarChart() {
-        double[] intervals = equalIntervalsWithEmpiricRule(0, 1, 1000);
         double[] intervalsLabels = new double[intervals.length - 1];
         System.arraycopy(intervals, 1, intervalsLabels, 0, intervalsLabels.length);
         double[] heights = heightsOfBarRectangles(expSequence, intervals);
-        Object[] intervalsLabelsObjArr = ArrayUtils.toObject(intervalsLabels);
-        Object[] heightsObjArr = ArrayUtils.toObject(heights);
-        return new BarChart("barChart", Arrays.asList(intervalsLabelsObjArr), Arrays.asList(heightsObjArr));
+        return new BarChart("barChart", valuesAsList(intervalsLabels), valuesAsList(heights));
+    }
+
+    public static Chart exponentialDistributionDensity() {
+        double[] intervalsNext = new double[intervals.length - 1];
+        System.arraycopy(intervals, 1, intervalsNext, 0, intervalsNext.length);
+        double[] density = new double[intervalsNext.length];
+        for (int i = 0; i < intervalsNext.length; i++) {
+            density[i] = exponentialDistributionDensityAtPoint(intervalsNext[i]);
+        }
+        return new Chart("expDensity", valuesAsList(density));
     }
 
     public static Chart prevNextChart() {

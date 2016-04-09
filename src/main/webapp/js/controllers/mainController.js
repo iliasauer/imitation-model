@@ -88,16 +88,21 @@ define(['jquery',
                 });
             }
 
+            function drawPrerunCharts() {
+                chartUtil.drawPrerunPointCharts(prerunChartArr);
+                const barChartObj = prerunChartArr[2];
+                const lineChartObj = prerunChartArr[3];
+                chartUtil.drawBarChart(plainId(['barChart','id']), barChartObj.intervalsLabels,
+                    'histogram', barChartObj.values,
+                    'density', lineChartObj.values);
+            }
+
             renderApp();
             renderLogArea();
             renderChartWindow();
             bindEvents();
+            drawPrerunCharts();
             webSocketController.connectWs();
-            chartUtil.drawPrerunCharts(prerunChartArr);
-            const barChartObj = prerunChartArr[2];
-            const barChartId = templateUtil.prerunCharts()
-            chartUtil.drawBarChart(plainId(['barChart','id']),
-                barChartObj.intervalsLabels, 'histogram', barChartObj.values, '', []);
         }
 
 
