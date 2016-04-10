@@ -11,6 +11,7 @@ import ru.ifmo.kot.queue.util.random.RandomGenerator;
 public class CliRunner implements Runnable {
 
     private static final Logger LOGGER = LogManager.getLogger(CliRunner.class);
+    private static final StringBuilder startInfoBuilder = new StringBuilder();
 
     private static boolean hasBeenStarted = false;
 
@@ -48,12 +49,12 @@ public class CliRunner implements Runnable {
             storage = Integer.parseInt(args[2]);
             interval = Integer.parseInt(args[4]);
             process = Integer.parseInt(args[5]);
-            if (args.length == 6) {
-                runs = 1;
-            } else {
-                runs = Integer.parseInt(args[6]);
-            }
             if (args.length == 7) {
+                runs = Integer.parseInt(args[6]);
+            } else {
+                runs = 1;
+            }
+            if (args.length == 8) {
                 generatorSeed = Integer.parseInt(args[7]);
             } else {
                 generatorSeed = ComplexRandom.SEED_1;
@@ -84,11 +85,25 @@ public class CliRunner implements Runnable {
         }
     }
 
+    private String getStartInfo() {
+        startInfoBuilder.setLength(0);
+        startInfoBuilder.append("The number of jobs: ").append(jobs).append("\n");
+        startInfoBuilder.append("The number of workers: ").append(workers).append("\n");
+        startInfoBuilder.append("The storage capacity: ").append(storage).append("\n");
+        startInfoBuilder.append("The service discipline: ").append(discipline.name()).append("\n");
+        startInfoBuilder.append("The average job entry interval: ").append(interval).append("\n");
+        startInfoBuilder.append("The average job processing time: ").append(process).append("\n");
+        startInfoBuilder.append("The number of runs: ").append(runs).append("\n");
+        startInfoBuilder.append("The generator seed: ").append(generatorSeed).append("\n");
+        return startInfoBuilder.toString();
+    }
+
 
     @Override
     public void run() {
         RandomGenerator.Builder generatorBuilder = RandomGenerator.newBuilder();
         generatorBuilder.setSeed(generatorSeed);
+        LOGGER.info(getStartInfo());
         for (int i = 0; i < runs; i++) {
             LOGGER.info("Run #" + (i + 1));
             QueueSystem.run(jobs, workers,

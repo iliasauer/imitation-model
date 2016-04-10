@@ -21,7 +21,7 @@ class WorkerFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable job) {
-        Thread t = new Thread(group, job, namePrefix + threadNumber.getAndIncrement());
+        Thread t = new Worker(group, job, namePrefix + threadNumber.getAndIncrement());
         if (t.isDaemon())
             t.setDaemon(false);
         if (t.getPriority() != Thread.NORM_PRIORITY)
