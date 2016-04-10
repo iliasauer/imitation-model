@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Job implements Runnable {
 
-    private static final StringBuilder LOCAL_LOGGER = new StringBuilder();
+    private static final StringBuffer LOCAL_LOGGER = new StringBuffer();
     private static final Logger LOGGER = LogManager.getLogger(Job.class);
     private static final FastDateFormat dateFormat = FastDateFormat.getInstance("HH:mm:ss.SS");
 
@@ -76,10 +76,10 @@ public class Job implements Runnable {
         if (number() == 1 && state.equals(State.OPEN)) {
             LOCAL_LOGGER.append("The run #").append(runsCounter).append(".\n");
         }
-        LOCAL_LOGGER.append(dateFormat.format(System.currentTimeMillis())).append(" - ")
-                .append(getStateDescription(state)).append("\n");
-        LOGGER.info(getStateDescription(state));
+        logInfo(getStateDescription(state));
     }
+
+
 
     private long number;
     private State state;
@@ -104,7 +104,8 @@ public class Job implements Runnable {
 
     @Override
     public void run() {
-        LOGGER.info(Thread.currentThread().getName() + " executes the job #" + number());
+        String currentThreadName = Thread.currentThread().getName();
+        logWorkerInfo(currentThreadName, "starts");
         this.start();
         try {
             TimeUnit.MILLISECONDS.sleep(complexity);
@@ -113,5 +114,17 @@ public class Job implements Runnable {
         }
         this.resolve();
         this.close();
+        logWorkerInfo(currentThreadName, "finishes");
+    }
+
+    private void logWorkerInfo(final String workerName, final String workerAction) {
+        final String info = workerName + " " + workerAction + " executing the job #" + number;
+        logInfo(info);
+    }
+
+    private void logInfo(final String info) {
+        LOCAL_LOGGER.append(dateFormat.format(System.currentTimeMillis())).append(" - ")
+                .append(info).append("\n");
+        LOGGER.info(info);
     }
 }
