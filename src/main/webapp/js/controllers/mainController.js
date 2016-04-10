@@ -21,6 +21,8 @@ define(['jquery',
         const jqId = templateUtil.jqId;
         const jqElem = templateUtil.jqElem;
 
+        var outputsArr = [];
+
         function run(prerunChartArr) {
             render(prerunChartArr);
         }
@@ -34,8 +36,9 @@ define(['jquery',
                 cssUtil.hide(jqId(['start', 'over', 'button']));
             }
 
-            function renderLogArea() {
+            function renderOutputArea() {
                 hbUtil.compileAndInsertAfter(jqId(['init', 'block']), outputAreaTemplate);
+                cssUtil.disable(jqId(['output','select','id']));
             }
 
             function renderChartWindow() {
@@ -48,6 +51,7 @@ define(['jquery',
                 const runButtonId = jqId(['run', 'button']);
                 const runButtonSignId = jqId(['run', 'button', 'sign']);
                 const formId = jqId(['main', 'form']);
+                const outputSelectId = jqId(['output','select','id']);
 
                 function runButtonEvent() {
                     cssUtil.disable(runButtonId);
@@ -68,6 +72,15 @@ define(['jquery',
                             $(runButtonSignId).text(outputObj.status);
                             cssUtil.enable(runButtonId);
                             webSocketController.sendWsMessageRequest('stopLog');
+                            outputsArr.push(outputObj);
+                            cssUtil.enable(outputSelectId);
+                            const outputSelect = $(outputSelectId);
+                            outputSelect.empty();
+                            $.each(outputsArr, function (index) {
+                                const option = $('<option/>');
+                                option.text(index + 1);
+                                outputSelect.append(option);
+                            });
                             output(outputObj);
                         });
                     $(formId).trigger('reset');
@@ -87,6 +100,13 @@ define(['jquery',
                     });
                     $(chartId).toggle(1);
                 });
+
+                const outputSelect = $(outputSelectId);
+                outputSelect.on('change', function() {
+                    const index = outputSelect.val();
+                    output(outputsArr[index - 1]);
+                });
+
             }
 
             function drawPrerunCharts() {
@@ -99,10 +119,11 @@ define(['jquery',
             }
 
             renderApp();
-            renderLogArea();
+            renderOutputArea();
             renderChartWindow();
             bindEvents();
             drawPrerunCharts();
+
             webSocketController.connectWs();
         }
         
