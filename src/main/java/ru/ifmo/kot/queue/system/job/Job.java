@@ -83,13 +83,13 @@ public class Job implements Runnable {
 
     private long number;
     private State state;
-    private long workComplexity;
+    private long complexity;
 
     /**
-     * @param workComplexity - time of the job execution in seconds
+     * @param complexity - time of the job execution in seconds
      */
-    public Job(final long workComplexity) {
-        this.workComplexity = workComplexity;
+    public Job(final long complexity) {
+        this.complexity = complexity;
         this.number = jobCounter++;
         this.open();
     }
@@ -106,7 +106,7 @@ public class Job implements Runnable {
     public void run() {
         this.start();
         try {
-            TimeUnit.SECONDS.sleep(workComplexity);
+            TimeUnit.SECONDS.sleep(complexity);
         } catch (InterruptedException e) {
             LOGGER.error("The internal server error");
         }
