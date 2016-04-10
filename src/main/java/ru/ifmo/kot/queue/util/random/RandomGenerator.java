@@ -76,7 +76,7 @@ public class RandomGenerator {
     public static class Builder {
 
         // default values
-        private int seed = ComplexRandom.SEED_1;
+        private int seed = SEED_1;
         private int range = 60;
 
         private Builder() {

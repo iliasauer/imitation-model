@@ -96,7 +96,7 @@ public class RunServlet extends HttpServlet {
 
     private boolean validateSeed(String seedParam) {
         if (seedParam.isEmpty()) {
-            seed = ComplexRandom.SEED_1;
+            seed = RandomGenerator.SEED_1;
         } else {
             try {
                 seed = Integer.parseInt(seedParam);

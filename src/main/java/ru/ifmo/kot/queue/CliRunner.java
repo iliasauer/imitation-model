@@ -57,7 +57,7 @@ public class CliRunner implements Runnable {
             if (args.length == 8) {
                 generatorSeed = Integer.parseInt(args[7]);
             } else {
-                generatorSeed = ComplexRandom.SEED_1;
+                generatorSeed = RandomGenerator.SEED_1;
             }
             discipline = StorageFactory.getDiscipline(args[3]);
             if (discipline == null) {
@@ -72,7 +72,7 @@ public class CliRunner implements Runnable {
             process = 60;
             discipline = Discipline.LIFO;
             runs = 2;
-            generatorSeed = ComplexRandom.SEED_1;
+            generatorSeed = RandomGenerator.SEED_1;
         }
         if (!hasBeenStarted) {
             new CliRunner(jobs, workers,

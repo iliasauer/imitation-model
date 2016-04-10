@@ -7,7 +7,6 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
-import static ru.ifmo.kot.queue.util.random.ComplexRandom.*;
 
 @RunWith(value = Parameterized.class)
 public class RandomGeneratorTest {
@@ -26,7 +25,7 @@ public class RandomGeneratorTest {
     public void nextDouble() {
         final int n = 1000000;
         RandomGenerator.Builder generatorBuilder = RandomGenerator.newBuilder();
-        generatorBuilder.setSeed(SEED_1);
+        generatorBuilder.setSeed(RandomGenerator.SEED_1);
         generatorBuilder.setGoal(goal);
         RandomGenerator generator = generatorBuilder.build();
         double[] doubleSequence = generator.generateDoubleSequence(n);
