@@ -18,28 +18,34 @@ class LifoStorage<T> extends LinkedBlockingDeque<T> {
 
     @Override
     public boolean offer(T item) {
-        logJobInfo(item, "Trying to add", "to");
+        jobInfo(item, "Trying to add", "to", false);
         return super.offerFirst(item);
     }
 
     @Override
     public T poll(long timeout, TimeUnit unit) throws InterruptedException {
         T item = super.poll(timeout, unit);
-        logJobInfo(item, "Taking", "from");
+        jobInfo(item, "Taking", "from", true);
         return item;
     }
 
     @Override
     public T take() throws InterruptedException {
         T item = super.take();
-        logJobInfo(item, "Taking", "from");
+        jobInfo(item, "Taking", "from", true);
         return item;
     }
 
-    private void logJobInfo(final T item, final String action, final String direction) {
+    @SuppressWarnings("Duplicates")
+    private void jobInfo(final T item, final String action, final String direction, boolean stat) {
         if (item instanceof FutureJob) {
             final Job job = ((FutureJob) item).getJob();
-            LOGGER.info(action + " the job#" + job.number() + " "  + direction + " the storage");
+            final long jobNumber = job.number();
+            if (stat) {
+                Job.STATISTICS.get(jobNumber).put(
+                        Job.IN_QUEUE_TIME, System.currentTimeMillis() - job.getOpenJobTime());
+            }
+            LOGGER.info(action + " the job#" + jobNumber + " "  + direction + " the storage");
         }
     }
 }
