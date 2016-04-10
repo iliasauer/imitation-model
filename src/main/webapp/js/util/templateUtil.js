@@ -39,6 +39,16 @@ define(['jquery'],
         
         const PRERUN_CHART = initPrerunChart();
 
+        const OUTPUT = {
+            'systemUseFactor': 'system use factor',
+            'avgJobQueueTime': 'average job queue waiting time',
+            'avgJobSystemTime': 'average job system standing time',
+            'avgJobQueueNumber': 'average job queue number over time',
+            'avgJobSystemNumber': 'average job system number over time',
+            'absTp': 'absolute system throughput',
+            'relTp': 'relative system throughput'
+        };
+
         function fieldTypes() {
             return FIELD_TYPE;
         }
@@ -57,6 +67,10 @@ define(['jquery'],
         
         function prerunCharts() {
             return PRERUN_CHART;
+        }
+
+        function outputs() {
+            return OUTPUT;
         }
 
         const DELIMITER = '-';
@@ -79,6 +93,7 @@ define(['jquery'],
             selectFields: selectFields,
             prerunPointCharts: prerunPointCharts,
             prerunCharts: prerunCharts,
+            outputs: outputs,
             plainId: composeId,
             jqId: composeJqueryId,
             jqElem: getComposedJqElement

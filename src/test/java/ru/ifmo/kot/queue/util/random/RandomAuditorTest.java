@@ -1,8 +1,10 @@
 package ru.ifmo.kot.queue.util.random;
 
 import org.junit.Test;
+import ru.ifmo.kot.queue.util.math.MathUtil;
 
 import static org.junit.Assert.*;
+import static ru.ifmo.kot.queue.util.math.MathUtil.round;
 import static ru.ifmo.kot.queue.util.random.RandomAuditor.*;
 
 public class RandomAuditorTest {
@@ -64,14 +66,6 @@ public class RandomAuditorTest {
             System.out.print(each + " ");
         }
         System.out.println();
-    }
-
-    private static double round(final double value, final int numberOfDigits) {
-        double rounder = 1.0;
-        for (int i = 0; i < numberOfDigits; i++) {
-            rounder *= 10.0;
-        }
-        return Math.round(value * rounder) / rounder;
     }
 
 }

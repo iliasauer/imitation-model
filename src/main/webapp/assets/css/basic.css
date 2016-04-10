@@ -1,9 +1,6 @@
 body {
     padding: 20px;
 }
-#myChart {
-    padding: 20px;
-}
 #run-button-sign {
     display: inline-block !important;
     padding-left: 10px !important;
@@ -18,4 +15,7 @@ body {
 }
 .invisible {
     display: none;
+}
+.output {
+    padding-top: 20px;
 }

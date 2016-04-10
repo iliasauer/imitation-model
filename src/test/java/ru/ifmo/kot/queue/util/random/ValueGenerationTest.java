@@ -8,6 +8,7 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 
 import static org.junit.runners.Parameterized.*;
+import static ru.ifmo.kot.queue.util.math.MathUtil.round;
 
 @SuppressWarnings("WeakerAccess")
 @RunWith(value = Parameterized.class)
@@ -43,11 +44,4 @@ public class ValueGenerationTest {
         Assert.assertEquals(sqrOfValue, variance, sqrOfValue * PERCENTAGE);
     }
 
-    private static double round(final double value, final int numberOfDigits) {
-        double rounder = 1.0;
-        for (int i = 0; i < numberOfDigits; i++) {
-            rounder *= 10.0;
-        }
-        return Math.round(value * rounder) / rounder;
-    }
 }

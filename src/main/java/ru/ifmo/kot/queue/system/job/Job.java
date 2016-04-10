@@ -21,8 +21,6 @@ public class Job implements Runnable {
 
     private static long jobCounter = 1;
     private static long runsCounter = 1;
-    private static long startJobTime;
-    private static long finishJobTime;
 
     public static void resetJobCounter() {
         jobCounter = 1;
@@ -95,6 +93,7 @@ public class Job implements Runnable {
     private long number;
     private State state;
     private long complexity;
+    private long startJobTime;
     private long openJobTime;
 
     /**
@@ -117,9 +116,9 @@ public class Job implements Runnable {
 
     @Override
     public void run() {
+        setStartJobTime();
         Worker worker = (Worker) Thread.currentThread();
         String currentThreadName = worker.getName();
-        setStartJobTime();
         logWorkerInfo(currentThreadName, "starts");
         this.start();
         try {
@@ -130,8 +129,7 @@ public class Job implements Runnable {
         this.resolve();
         this.close();
         logWorkerInfo(currentThreadName, "finishes");
-        setFinishJobTime();
-        worker.increaseTime(totalJobTime());
+        worker.increaseTime(System.currentTimeMillis() - startJobTime);
     }
 
     private void setOpenJobTime() {
@@ -142,16 +140,8 @@ public class Job implements Runnable {
         return openJobTime;
     }
 
-    private static void setStartJobTime() {
+    private void setStartJobTime() {
         startJobTime = System.currentTimeMillis();
-    }
-
-    private static void setFinishJobTime() {
-        finishJobTime = System.currentTimeMillis();
-    }
-
-    private static long totalJobTime() {
-        return finishJobTime - startJobTime;
     }
 
     private void logWorkerInfo(final String workerName, final String workerAction) {

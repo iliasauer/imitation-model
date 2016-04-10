@@ -1,6 +1,6 @@
 define(['jquery',
         'text!../../templates/app.hbs',
-        'text!../../templates/logArea.hbs',
+        'text!../../templates/outputArea.hbs',
         'text!../../templates/chartWindow.hbs',
         '../util/handlebarsUtil',
         '../util/templateUtil',
@@ -9,7 +9,7 @@ define(['jquery',
         './webSocketController'],
     function ($,
               appTemplate,
-              logAreaTemplate,
+              outputAreaTemplate,
               chartWindowTemplate,
               hbUtil,
               templateUtil,
@@ -35,7 +35,7 @@ define(['jquery',
             }
 
             function renderLogArea() {
-                hbUtil.compileAndInsertAfter(jqId(['init', 'block']), logAreaTemplate);
+                hbUtil.compileAndInsertAfter(jqId(['init', 'block']), outputAreaTemplate);
             }
 
             function renderChartWindow() {
@@ -64,10 +64,11 @@ define(['jquery',
 
                     $(runButtonSignId).text('Wait...');
                     $.post("/run", $(formId).serialize())
-                        .done(function (data) {
-                            $(runButtonSignId).text(data.status);
+                        .done(function (outputObj) {
+                            $(runButtonSignId).text(outputObj.status);
                             cssUtil.enable(runButtonId);
                             webSocketController.sendWsMessageRequest('stopLog');
+                            output(outputObj);
                         });
                     $(formId).trigger('reset');
                     $(jqId(['log'])).val('');
@@ -104,7 +105,17 @@ define(['jquery',
             drawPrerunCharts();
             webSocketController.connectWs();
         }
-
+        
+        function output(outputObj) {
+            const outputBlock = $(jqId(['output', 'block']));
+            outputBlock.empty();
+            $.each(templateUtil.outputs(), function (key, value) {
+                const paragraph = $('<p/>');
+                cssUtil.addId(plainId([key, 'id']), paragraph);
+                outputBlock.append(paragraph);
+                paragraph.text('The ' + value + ': ' + outputObj[key]);
+            })
+        }
 
         return {
             run: run

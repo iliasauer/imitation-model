@@ -7,6 +7,7 @@ import ru.ifmo.kot.queue.system.engine.Engine;
 import ru.ifmo.kot.queue.system.engine.Worker;
 import ru.ifmo.kot.queue.system.job.Job;
 import ru.ifmo.kot.queue.system.storage.Discipline;
+import ru.ifmo.kot.queue.util.math.MathUtil;
 import ru.ifmo.kot.queue.util.random.RandomGenerator;
 
 import java.util.ArrayList;
@@ -22,10 +23,18 @@ import java.util.concurrent.TimeUnit;
 public class QueueSystem {
 
     @SuppressWarnings("WeakerAccess")
-    public static final Map<String, Double> STATISTICS = new HashMap<>();
-    private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("HH:mm:ss.SSS",
-            TimeZone.getTimeZone("GMT")
-            , Locale.getDefault());
+    private static final String SYSTEM_USE_FACTOR_KEY = "systemUseFactor";
+    private static final String AVG_JOB_QUEUE_TIME_KEY = "avgJobQueueTime";
+    private static final String AVG_JOB_SYSTEM_TIME_KEY = "avgJobSystemTime";
+    private static final String AVG_JOB_QUEUE_NUMBER_KEY = "avgJobQueueNumber";
+    private static final String AVG_JOB_SYSTEM_NUMBER_KEY = "avgJobSystemNumber";
+    private static final String ABSOLUTE_SYSTEM_THROUGHPUT_KEY = "absTp";
+    private static final String RELATIVE_SYSTEM_THROUGHPUT_KEY = "relTp";
+    private static final Map<String, Double> STATISTICS = new HashMap<>();
+    public static final Map<String, String> FORMATTED_STATISTICS = new HashMap<>();
+    @SuppressWarnings("WeakerAccess")
+    private static final FastDateFormat TIME_FORMAT = FastDateFormat.getInstance("HH:mm:ss.SSS",
+                    TimeZone.getTimeZone("GMT"), Locale.getDefault());
     private static final Logger LOGGER = LogManager.getLogger(QueueSystem.class);
 
     private static Engine engine = null;
@@ -99,7 +108,7 @@ public class QueueSystem {
 
     @SuppressWarnings("WeakerAccess")
     public static String totalRunTimeString() {
-        return DATE_FORMAT.format(totalRunTime);
+        return TIME_FORMAT.format(totalRunTime);
     }
 
     private static void awaitTasksCompletion(List<Future<?>> futures) {
@@ -147,11 +156,13 @@ public class QueueSystem {
     }
 
     private static void calculateSystemUseFactor(final int numberOfWorkers) {
-        double sum = 0;
-        for (Long each : Worker.STATISTICS.values()) {
-            sum += (((double) each) / totalRunTime);
+        long workersUseTime = 0;
+        for (Long workerUseTime : Worker.STATISTICS.values()) {
+            workersUseTime += workerUseTime;
         }
-        STATISTICS.put("systemUseFactor", ((sum / numberOfWorkers)) * 1000);
+        final double relativeWorkersUse = ((double) workersUseTime) / totalRunTime;
+        final double value = relativeWorkersUse / numberOfWorkers;
+        putStatistic(SYSTEM_USE_FACTOR_KEY, value);
     }
 
     private static void calculateAvgJobQueueTime(final int numberOfJobs) {
@@ -159,7 +170,8 @@ public class QueueSystem {
         for (Map<String, Long> each : Job.STATISTICS.values()) {
             sum += each.get(Job.IN_QUEUE_TIME);
         }
-        STATISTICS.put("avgJobQueueTime", (((double) sum) / numberOfJobs) * 1000);
+        final double value = (((double) sum) / numberOfJobs) * 1000;
+        putStatistic(AVG_JOB_QUEUE_TIME_KEY, value);
     }
 
     private static void calculateAvgJobSystemTime(final int numberOfJobs) {
@@ -167,25 +179,33 @@ public class QueueSystem {
         for (Map<String, Long> each : Job.STATISTICS.values()) {
             sum += each.get(Job.IN_SYSTEM_TIME);
         }
-        STATISTICS.put("avgJobSystemTime", (((double) sum) / numberOfJobs) * 1000);
+        final double value = (((double) sum) / numberOfJobs) * 1000;
+        putStatistic(AVG_JOB_SYSTEM_TIME_KEY, (((double) sum) / numberOfJobs) * 1000);
     }
 
     private static void calculateAvgJobQueueNumber(final int avgInterval) {
-        STATISTICS.put("avgJobQueueNumber", (
-                STATISTICS.get("avgJobQueueTime") / (avgInterval * 1000)));
+        final double value = STATISTICS.get(AVG_JOB_QUEUE_TIME_KEY) / (avgInterval * 1000);
+        putStatistic(AVG_JOB_QUEUE_NUMBER_KEY, value);
     }
 
     private static void calculateAvgJobSystemNumber(final int avgInterval) {
-        STATISTICS.put("avgJobSystemNumber", (
-                STATISTICS.get("avgJobSystemTime") / (avgInterval * 1000)));
+        final double value = STATISTICS.get(AVG_JOB_SYSTEM_TIME_KEY) / (avgInterval * 1000);
+        putStatistic(AVG_JOB_SYSTEM_NUMBER_KEY, value);
         //TODO check it
     }
 
     private static void calculateAbsoluteSystemThroughput() {
-        STATISTICS.put("absTp", ((double) successfullyCompletedJobs) / (totalRunTime * 1000));
+        final double value =  ((double) successfullyCompletedJobs) / (totalRunTime * 1000);
+        putStatistic(ABSOLUTE_SYSTEM_THROUGHPUT_KEY, value);
     }
 
     private static void calculateRelativeSystemThroughput(final int numberOfJobs) {
-        STATISTICS.put("relTp", ((double) successfullyCompletedJobs) / numberOfJobs);
+        final double value = ((double) successfullyCompletedJobs) / numberOfJobs;
+        putStatistic(RELATIVE_SYSTEM_THROUGHPUT_KEY, value);
+    }
+
+    private static void putStatistic(String key, double statistic) {
+        STATISTICS.put(key, statistic);
+        FORMATTED_STATISTICS.put(key, String.valueOf(statistic));
     }
 }

@@ -4,7 +4,7 @@ define([
     "Chart",
     "Scatter",
     "text!../../templates/app.hbs",
-    "text!../../templates/logArea.hbs",
+    "text!../../templates/outputArea.hbs",
     "text!../../templates/chartWindow.hbs",
     "../util/handlebarsUtil",
     "../util/templateUtil"

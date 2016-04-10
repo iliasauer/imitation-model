@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.MimeTypes;
 import ru.ifmo.kot.queue.CliRunner;
+import ru.ifmo.kot.queue.system.QueueSystem;
 import ru.ifmo.kot.queue.system.storage.StorageFactory;
 import ru.ifmo.kot.queue.system.storage.Discipline;
 import ru.ifmo.kot.queue.util.random.ComplexRandom;
@@ -58,6 +59,7 @@ public class RunServlet extends HttpServlet {
         } else {
             responseMap.put("status", "Parameters are invalid.");
         }
+        responseMap.putAll(QueueSystem.FORMATTED_STATISTICS);
         String json = MAPPER.writeValueAsString(responseMap);
         response.setContentType(MimeTypes.Type.APPLICATION_JSON.toString());
         response.getWriter().write(json);;
