@@ -8,8 +8,6 @@ import ru.ifmo.kot.queue.system.job.Job;
 import ru.ifmo.kot.queue.system.storage.Discipline;
 import ru.ifmo.kot.queue.util.random.RandomGenerator;
 
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -42,12 +40,14 @@ public class QueueSystem {
                 avgInterval, avgProcessingTime);
         int counter = 0;
         LOGGER.info("The system starts running.");
-        List<Future<?>> futures = new ArrayList<>();
+        final List<Future<?>> futures = new ArrayList<>();
         setStartRunTime();
         while (counter < numberOfJobs) {
-            futures.add(engine.submit(new Job(generateJobComplexity(processGenerator))));
+            final Job nextJob = new Job(generateJobComplexity(processGenerator) * 10);
+            final Future<?> jobFuture = engine.submit(nextJob);
+            futures.add(jobFuture);
             try {
-                TimeUnit.SECONDS.sleep(generateJobEntryInterval(intervalGenerator));
+                TimeUnit.MILLISECONDS.sleep(generateJobEntryInterval(intervalGenerator) * 10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -74,6 +74,7 @@ public class QueueSystem {
         finishRunTime = System.currentTimeMillis();
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static String totalRunTime() {
         final long delta = finishRunTime - startRunTime;
         return DATE_FORMAT.format(finishRunTime - startRunTime);

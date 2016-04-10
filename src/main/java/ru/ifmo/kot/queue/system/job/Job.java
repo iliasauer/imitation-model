@@ -104,9 +104,10 @@ public class Job implements Runnable {
 
     @Override
     public void run() {
+        LOGGER.info(Thread.currentThread().getName() + " executes the job #" + number());
         this.start();
         try {
-            TimeUnit.SECONDS.sleep(complexity);
+            TimeUnit.MILLISECONDS.sleep(complexity);
         } catch (InterruptedException e) {
             LOGGER.error("The internal server error");
         }

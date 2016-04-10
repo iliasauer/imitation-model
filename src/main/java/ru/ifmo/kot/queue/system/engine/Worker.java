@@ -13,8 +13,8 @@ class Worker extends Thread {
 
     @Override
     public void run() {
-        LOGGER.info(this.getName() + " starts executing a job." );
+        LOGGER.info(this.getName() + " starts." );
         super.run();
-        LOGGER.info(this.getName() + " finishes executing a job." );
+        LOGGER.info(this.getName() + " finishes." );
     }
 }
