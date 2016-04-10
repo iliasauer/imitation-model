@@ -98,6 +98,7 @@ public class Job implements Runnable {
         return number;
     }
 
+    @SuppressWarnings("unused")
     public State state() {
         return state;
     }

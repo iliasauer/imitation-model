@@ -101,6 +101,7 @@ public class RandomAuditor {
         return z;
     }
 
+    @SuppressWarnings("unused")
     public static double significanceCriteriaStatisticsOfEqualIntervalsWithStrugesRule(
             final double[] sequence,
             final double minValue, final double maxValue,

@@ -14,12 +14,11 @@ public class Charts {
     private static int n1 = 1000;
     private static int n2 = 100000;
 
-    private static final double[] expSequence = exponentialyDistributedRandomSequence(SEED_1, a,
+    private static final double[] EXP_SEQUENCE = exponentialyDistributedRandomSequence(SEED_1, a,
             m, n1);
-    private static final double[] expSequence2 = exponentialyDistributedRandomSequence(SEED_1, a,
+    private static final double[] EXP_SEQUENCE_2 = exponentialyDistributedRandomSequence(SEED_1, a,
             m, n2);
-    private static final double[] intervals = equalIntervalsWithEmpiricRule(0, 1, n1);
-    private static final double[] intervals2 = equalIntervalsWithEmpiricRule(0, 1, n2);
+    private static final double[] INTERVALS = equalIntervalsWithEmpiricRule(0, 1, n2);
 
     private static List<Object> valuesAsList(double[] values) {
         Object[] objArr = ArrayUtils.toObject(values);
@@ -31,19 +30,19 @@ public class Charts {
     }
 
     public static Chart correlationChart() {
-        return indexChart("correlationChart", correlation(expSequence), 20);
+        return indexChart("correlationChart", correlation(EXP_SEQUENCE), 20);
     }
 
     public static BarChart distributionBarChart() {
-        double[] intervalsLabels = new double[intervals2.length - 1];
-        System.arraycopy(intervals2, 1, intervalsLabels, 0, intervalsLabels.length);
-        double[] heights = heightsOfBarRectangles(expSequence2, intervals2);
+        double[] intervalsLabels = new double[INTERVALS.length - 1];
+        System.arraycopy(INTERVALS, 1, intervalsLabels, 0, intervalsLabels.length);
+        double[] heights = heightsOfBarRectangles(EXP_SEQUENCE_2, INTERVALS);
         return new BarChart("barChart", valuesAsList(intervalsLabels), valuesAsList(heights));
     }
 
     public static Chart exponentialDistributionDensity() {
-        double[] intervalsNext = new double[intervals2.length - 1];
-        System.arraycopy(intervals2, 1, intervalsNext, 0, intervalsNext.length);
+        double[] intervalsNext = new double[INTERVALS.length - 1];
+        System.arraycopy(INTERVALS, 1, intervalsNext, 0, intervalsNext.length);
         double[] density = new double[intervalsNext.length];
         for (int i = 0; i < intervalsNext.length; i++) {
             density[i] = exponentialDistributionDensityAtPoint(intervalsNext[i], 0.5);
@@ -52,7 +51,7 @@ public class Charts {
     }
 
     public static Chart prevNextChart() {
-        return nextElementChart("prevNextChart", expSequence);
+        return nextElementChart("prevNextChart", EXP_SEQUENCE);
     }
 
     private static Chart indexChart(String name, double[] sequence, final int numberOfValues) {

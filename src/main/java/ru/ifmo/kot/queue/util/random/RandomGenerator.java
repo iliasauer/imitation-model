@@ -9,6 +9,7 @@ public class RandomGenerator {
      * start values
      */
     public static final int SEED_1 = 676475;
+    @SuppressWarnings("unused")
     public static final int SEED_2 = 565645;
 
     /**

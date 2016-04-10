@@ -17,6 +17,7 @@ public class ComplexRandom {
      * start values
      */
     public static final int SEED_1 = 676475;
+    @SuppressWarnings("unused")
     public static final int SEED_2 = 565645;
 
     /**
@@ -39,6 +40,7 @@ public class ComplexRandom {
     public static final double u = 1.96;
 
 
+    @SuppressWarnings("unused")
     public enum Type {
         STANDARD, EXPONENTIAL
     }
@@ -78,6 +80,7 @@ public class ComplexRandom {
         return uniformlyDistributedRandomSequence(seed, a, m, n);
     }
 
+    @SuppressWarnings("unused")
     public static double[] uniformlyDistributedRandomSequence() {
         return uniformlyDistributedRandomSequence(SEED_1);
     }
@@ -97,6 +100,7 @@ public class ComplexRandom {
         return standardUniformlyDistributedRandomSequence(seed, a, m, n);
     }
 
+    @SuppressWarnings("unused")
     public static double[] standardUniformlyDistributedRandomSequence() {
         return standardUniformlyDistributedRandomSequence(SEED_1, a, m, n);
     }
@@ -116,6 +120,7 @@ public class ComplexRandom {
         return exponentialyDistributedRandomSequence(seed, a, m, n);
     }
 
+    @SuppressWarnings("unused")
     public static double[] exponentialyDistributedRandomSequence() {
         return exponentialyDistributedRandomSequence(SEED_1, a, m, n);
     }
@@ -156,6 +161,7 @@ public class ComplexRandom {
         return rangeUniformlyDistributedRandomSequence(SEED_1, minValue, maxValue);
     }
 
+    @SuppressWarnings("unused")
     public static double[] rangeUniformlyDistributedRandomSequence(final int range) {
         return rangeUniformlyDistributedRandomSequence(0, range);
     }
@@ -227,6 +233,7 @@ public class ComplexRandom {
         return new double[]{mean - accuracy, mean + accuracy};
     }
 
+    @SuppressWarnings("unused")
     public static String sequenceToString(double[] sequence) {
         StringBuilder builder = new StringBuilder();
         for (double num: sequence) {

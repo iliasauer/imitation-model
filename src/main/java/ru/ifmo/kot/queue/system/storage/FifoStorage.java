@@ -12,7 +12,7 @@ public class FifoStorage<T> extends LinkedBlockingQueue<T> {
 
     private static final Logger LOGGER = LogManager.getLogger(FifoStorage.class);
 
-    public FifoStorage(int capacity) {
+    FifoStorage(int capacity) {
         super(capacity);
     }
 
