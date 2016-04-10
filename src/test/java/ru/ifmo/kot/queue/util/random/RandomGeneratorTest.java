@@ -1,38 +1,43 @@
 package ru.ifmo.kot.queue.util.random;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
+import static ru.ifmo.kot.queue.util.random.ComplexRandom.*;
 
+@RunWith(value = Parameterized.class)
 public class RandomGeneratorTest {
 
     private static final double PERCENTAGE = 0.01;
 
-    @Test
-    public void nextDouble() {
-        final int goal1 = 60;
-        final int goal2 = 120;
-        RandomGenerator.Builder generatorBuilder = RandomGenerator.newBuilder();
-        generatorBuilder.setSeed(ComplexRandom.SEED_1);
-        generatorBuilder.setGoal(goal1);
-        RandomGenerator generator1 = generatorBuilder.build();
-        generatorBuilder.setGoal(goal2);
-        RandomGenerator generator2 = generatorBuilder.build();
-        final int n = 1000;
-        double[] sequence = generateSequence(generator1, n);
-        double mean = ComplexRandom.mean(sequence);
-        assertEquals(goal1, mean, goal1 * PERCENTAGE);
-        sequence = generateSequence(generator2, n);
-        mean = ComplexRandom.mean(sequence);
-        assertEquals(goal2, mean, goal2 * PERCENTAGE);
+    @Parameterized.Parameters
+    public static Iterable data() {
+        return Arrays.asList(60, 180);
     }
 
-    private double[] generateSequence(final RandomGenerator generator, final int numberOfValues) {
-        double[] sequence = new double[numberOfValues];
-        for (int i = 0; i < numberOfValues; i++) {
-            sequence[i] = generator.nextInt();
+    @Parameterized.Parameter
+    public int goal;
+
+    @Test
+    public void nextDouble() {
+        final int n = 1000000;
+        RandomGenerator.Builder generatorBuilder = RandomGenerator.newBuilder();
+        generatorBuilder.setSeed(SEED_1);
+        generatorBuilder.setGoal(goal);
+        RandomGenerator generator = generatorBuilder.build();
+        double[] doubleSequence = generator.generateDoubleSequence(n);
+        int[] intSequence = generator.generateIntSequence(n);
+        for (int x: intSequence) {
+            assertTrue("The value must be be greater than or equal to 1", x >= 1);
         }
-        return sequence;
+        assertEquals(goal, ComplexRandom.mean(doubleSequence), goal * PERCENTAGE);
+        assertEquals(goal, ComplexRandom.mean(intSequence), 0);
     }
+
+
 
 }

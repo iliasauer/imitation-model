@@ -168,6 +168,14 @@ public class ComplexRandom {
         return sum/sequence.length;
     }
 
+    public static double mean(int[] sequence) {
+        int sum = 0;
+        for (int num: sequence) {
+            sum += num;
+        }
+        return sum/sequence.length;
+    }
+
     public static double variance(double[] sequence) {
         double mean = mean(sequence);
         double sum = 0;
