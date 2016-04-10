@@ -76,7 +76,6 @@ public class QueueSystem {
 
     @SuppressWarnings("WeakerAccess")
     public static String totalRunTime() {
-        final long delta = finishRunTime - startRunTime;
         return DATE_FORMAT.format(finishRunTime - startRunTime);
     }
 

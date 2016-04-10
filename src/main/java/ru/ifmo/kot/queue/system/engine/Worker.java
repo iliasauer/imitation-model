@@ -15,6 +15,6 @@ class Worker extends Thread {
     public void run() {
         LOGGER.info(this.getName() + " starts." );
         super.run();
-        LOGGER.info(this.getName() + " finishes." );
+        LOGGER.info(this.getName() + " stops." );
     }
 }

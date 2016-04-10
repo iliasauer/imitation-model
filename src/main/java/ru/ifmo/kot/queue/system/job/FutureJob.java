@@ -8,6 +8,7 @@ public class FutureJob<V> extends FutureTask<V> {
 
     public FutureJob(Job job, V result) {
         super(job, result);
+        this.job = job;
     }
 
     public Job getJob() {
