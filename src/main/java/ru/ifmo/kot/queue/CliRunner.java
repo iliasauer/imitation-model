@@ -79,7 +79,7 @@ public class CliRunner implements Runnable {
             process = 60;
             discipline = Discipline.LIFO;
             runs = 2;
-            seed = RandomGenerator.SEED_1;
+            seed = 0;
         }
         if (!hasBeenStarted) {
             LOGGER.info(getStartInfo(jobs, workers,
@@ -119,9 +119,15 @@ public class CliRunner implements Runnable {
                 .append(QueueSystem.RUN_PARAM_NAMES.get(Input.PROCESS_TIME_KEY))
                 .append(": ").append(process).append("\n");
         startStopInfoBuilder.append("The ")
-                .append("The number of runs: ").append(runs).append("\n");
+                .append("number of runs: ").append(runs).append("\n");
         startStopInfoBuilder.append("The ")
-                .append("The generator seed: ").append(generatorSeed).append("\n");
+                .append("generator seed: ");
+        if (generatorSeed <= 0) {
+            startStopInfoBuilder.append("not specified");
+        } else {
+            startStopInfoBuilder.append(generatorSeed);
+        }
+        startStopInfoBuilder.append("\n");
         return startStopInfoBuilder.toString();
     }
 

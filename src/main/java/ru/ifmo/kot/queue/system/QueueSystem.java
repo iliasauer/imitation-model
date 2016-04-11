@@ -103,7 +103,7 @@ public class QueueSystem {
     }
 
     private static void setSeed(final int seed) {
-        if (seed == 0) {
+        if (seed <= 0) {
             QueueSystem.setSeed(RandomGenerator.SEED_1, RandomGenerator.SEED_2);
         } else {
             QueueSystem.setSeed(seed, seed);
