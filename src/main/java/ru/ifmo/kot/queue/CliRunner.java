@@ -18,6 +18,7 @@ public class CliRunner implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger(CliRunner.class);
     private static final StringBuilder startStopInfoBuilder = new StringBuilder();
 
+    private static int runCounter = 0;
     private static boolean hasBeenStarted = false;
 
     private final int jobs;
@@ -144,7 +145,8 @@ public class CliRunner implements Runnable {
     @Override
     public void run() {
         for (int i = 0; i < runs; i++) {
-            LOGGER.info("Run #" + (i + 1));
+            runCounter++;
+            LOGGER.info("Run #" + runCounter);
             QueueSystem.run(jobs, workers,
                     storage, discipline,
                     interval, process, seed);
