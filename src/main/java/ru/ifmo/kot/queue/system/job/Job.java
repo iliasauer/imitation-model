@@ -122,7 +122,7 @@ public class Job implements Runnable {
         logWorkerInfo(currentThreadName, "starts");
         this.start();
         try {
-            TimeUnit.SECONDS.sleep(complexity);
+            TimeUnit.MILLISECONDS.sleep(complexity);
         } catch (InterruptedException e) {
             LOGGER.error("The internal server error");
         }

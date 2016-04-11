@@ -7,7 +7,6 @@ import ru.ifmo.kot.queue.system.engine.Engine;
 import ru.ifmo.kot.queue.system.engine.Worker;
 import ru.ifmo.kot.queue.system.job.Job;
 import ru.ifmo.kot.queue.system.storage.Discipline;
-import ru.ifmo.kot.queue.util.math.MathUtil;
 import ru.ifmo.kot.queue.util.random.RandomGenerator;
 
 import java.util.ArrayList;
@@ -22,44 +21,58 @@ import java.util.concurrent.TimeUnit;
 
 public class QueueSystem {
 
-    @SuppressWarnings("WeakerAccess")
-    private static final String SYSTEM_USE_FACTOR_KEY = "systemUseFactor";
-    private static final String AVG_JOB_QUEUE_TIME_KEY = "avgJobQueueTime";
-    private static final String AVG_JOB_SYSTEM_TIME_KEY = "avgJobSystemTime";
-    private static final String AVG_JOB_QUEUE_NUMBER_KEY = "avgJobQueueNumber";
-    private static final String AVG_JOB_SYSTEM_NUMBER_KEY = "avgJobSystemNumber";
-    private static final String ABSOLUTE_SYSTEM_THROUGHPUT_KEY = "absTp";
-    private static final String RELATIVE_SYSTEM_THROUGHPUT_KEY = "relTp";
-    private static final Map<String, Double> STATISTICS = new HashMap<>();
-    public static final Map<String, String> FORMATTED_STATISTICS = new HashMap<>();
-    @SuppressWarnings("WeakerAccess")
     private static final FastDateFormat TIME_FORMAT = FastDateFormat.getInstance("HH:mm:ss.SSS",
-                    TimeZone.getTimeZone("GMT"), Locale.getDefault());
+            TimeZone.getTimeZone("GMT"), Locale.getDefault());
     private static final Logger LOGGER = LogManager.getLogger(QueueSystem.class);
 
+    public static final Map<String, String> RUN_PARAM_NAMES = new HashMap<>();
+
+    static {
+        RUN_PARAM_NAMES.put(Input.NUMBER_OF_JOBS_KEY, "number of jobs");
+        RUN_PARAM_NAMES.put(Input.NUMBER_OF_WORKERS_KEY, "number of workers");
+        RUN_PARAM_NAMES.put(Input.STORAGE_CAPACITY_KEY, "capacity of storage");
+        RUN_PARAM_NAMES.put(Input.SERVICE_DISCIPLINE_KEY, "service discipline");
+        RUN_PARAM_NAMES.put(Input.INTERVAL_KEY, "average job entry interval");
+        RUN_PARAM_NAMES.put(Input.PROCESS_TIME_KEY, "average job processing time");
+    }
+
+    public static final Map<String, String> OUTPUT_PARAM_NAMES = new HashMap<>();
+
+    static {
+        OUTPUT_PARAM_NAMES.put(Output.SYSTEM_USE_FACTOR_KEY, "system use factor");
+        OUTPUT_PARAM_NAMES.put(Output.AVG_JOB_QUEUE_TIME_KEY, "average job queue waiting time");
+        OUTPUT_PARAM_NAMES.put(Output.AVG_JOB_SYSTEM_TIME_KEY, "average job system standing time");
+        OUTPUT_PARAM_NAMES.put(Output.AVG_JOB_QUEUE_NUMBER_KEY, "average job queue number over time");
+        OUTPUT_PARAM_NAMES.put(Output.AVG_JOB_SYSTEM_NUMBER_KEY, "average job system number over time");
+        OUTPUT_PARAM_NAMES.put(Output.ABSOLUTE_SYSTEM_THROUGHPUT_KEY, "absolute system throughput");
+        OUTPUT_PARAM_NAMES.put(Output.RELATIVE_SYSTEM_THROUGHPUT_KEY, "relative system throughput");
+    }
+
+    public static final Map<String, List<Map<String, String>>> IO_MAP = new HashMap<>();
+
+    static {
+        IO_MAP.put(Statistics.INPUT_KEY, new ArrayList<Map<String, String>>());
+        IO_MAP.put(Statistics.OUTPUT_KEY, new ArrayList<Map<String, String>>());
+    }
+
     private static Engine engine = null;
-    private static long startRunTime;
-    private static long finishRunTime;
-    private static long totalRunTime;
-    private static long successfullyCompletedJobs;
-    private static int numberOfJobs;
-    private static int numberOfWorkers;
-    private static int avgInterval;
+    private static int numberOfJobs, numberOfWorkers, capacityOfStorage,
+            avgInterval, avgProcessTime;
+    private static String discipline;
+    private static long startRunTime, finishRunTime, totalRunTime, successfullyCompletedJobs;
+
+    private static double systemUseFactor, avgJobQueueTime, avgJobSystemTime,
+            avgJobQueueNumber, avgJobSystemNumber, absoluteThroughput, relativeThroughput;
 
     public static void run(int numberOfJobs, int numberOfWorkers,
                            int capacityOfStorage, Discipline discipline,
-                           int avgInterval, int avgProcessingTime,
+                           int avgInterval, int avgProcessTime,
                            RandomGenerator.Builder generatorBuilder) {
         engine = new Engine(numberOfWorkers, capacityOfStorage, discipline);
-        generatorBuilder.setGoal(avgInterval);
-        RandomGenerator intervalGenerator = generatorBuilder.build();
-        generatorBuilder.setGoal(avgProcessingTime);
-        RandomGenerator processGenerator = generatorBuilder.build();
-        checkParams(numberOfJobs, numberOfWorkers, capacityOfStorage,
-                avgInterval, avgProcessingTime);
-        QueueSystem.numberOfJobs = numberOfJobs;
-        QueueSystem.numberOfWorkers = numberOfWorkers;
-        QueueSystem.avgInterval = avgInterval;
+        RandomGenerator intervalGenerator = getRandomGenerator(generatorBuilder, avgInterval);
+        RandomGenerator processGenerator = getRandomGenerator(generatorBuilder, avgProcessTime);
+        saveInputParams(numberOfJobs, numberOfWorkers, capacityOfStorage,
+                discipline, avgInterval, avgProcessTime);
         int counter = 0;
         LOGGER.info("The system starts running.");
         final List<Future<?>> futures = new ArrayList<>();
@@ -69,7 +82,7 @@ public class QueueSystem {
             final Future<?> jobFuture = engine.submit(nextJob);
             futures.add(jobFuture);
             try {
-                TimeUnit.SECONDS.sleep(generateJobEntryInterval(intervalGenerator));
+                TimeUnit.MILLISECONDS.sleep(generateJobEntryInterval(intervalGenerator));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -80,6 +93,42 @@ public class QueueSystem {
         setTotalRunTime();
         setSuccessfullyCompletedJobs();
         LOGGER.info("The total run time: " + totalRunTimeString());
+    }
+
+    private static RandomGenerator getRandomGenerator(RandomGenerator.Builder builder, int goal) {
+        builder.setGoal(goal);
+        return builder.build();
+    }
+
+    private static void saveInputParams(int numberOfJobs, int numberOfWorkers,
+                                        int capacityOfStorage, Discipline discipline,
+                                        int avgInterval, int avgProcessTime) {
+        QueueSystem.numberOfJobs = numberOfJobs;
+        QueueSystem.numberOfWorkers = numberOfWorkers;
+        QueueSystem.capacityOfStorage = capacityOfStorage;
+        QueueSystem.discipline = discipline.name();
+        QueueSystem.avgInterval = avgInterval;
+        QueueSystem.avgProcessTime = avgProcessTime;
+        final Map<String, String> inputMap = new HashMap<>();
+        inputMap.put(Input.NUMBER_OF_JOBS_KEY, String.valueOf(numberOfJobs));
+        inputMap.put(Input.NUMBER_OF_WORKERS_KEY, String.valueOf(numberOfWorkers));
+        inputMap.put(Input.STORAGE_CAPACITY_KEY, String.valueOf(capacityOfStorage));
+        inputMap.put(Input.SERVICE_DISCIPLINE_KEY, discipline.name());
+        inputMap.put(Input.INTERVAL_KEY, String.valueOf(avgInterval));
+        inputMap.put(Input.PROCESS_TIME_KEY, String.valueOf(avgProcessTime));
+        IO_MAP.get(Statistics.INPUT_KEY).add(inputMap);
+    }
+
+    private static void saveOutputParams() {
+        final Map<String, String> outputMap = new HashMap<>();
+        outputMap.put(Output.SYSTEM_USE_FACTOR_KEY, String.valueOf(QueueSystem.systemUseFactor));
+        outputMap.put(Output.AVG_JOB_QUEUE_TIME_KEY, String.valueOf(QueueSystem.avgJobQueueTime));
+        outputMap.put(Output.AVG_JOB_SYSTEM_TIME_KEY, String.valueOf(QueueSystem.avgJobSystemTime));
+        outputMap.put(Output.AVG_JOB_QUEUE_NUMBER_KEY, String.valueOf(QueueSystem.avgJobQueueNumber));
+        outputMap.put(Output.AVG_JOB_SYSTEM_NUMBER_KEY, String.valueOf(QueueSystem.avgJobSystemNumber));
+        outputMap.put(Output.ABSOLUTE_SYSTEM_THROUGHPUT_KEY, String.valueOf(QueueSystem.absoluteThroughput));
+        outputMap.put(Output.RELATIVE_SYSTEM_THROUGHPUT_KEY, String.valueOf(QueueSystem.relativeThroughput));
+        IO_MAP.get(Statistics.OUTPUT_KEY).add(outputMap);
     }
 
     private static int generateJobComplexity(final RandomGenerator generator) {
@@ -121,91 +170,72 @@ public class QueueSystem {
         }
     }
 
-    private static void handleNotCorrectIntParam(int param, String name) {
-        if (param <= 0) {
-            LOGGER.error("The parameter \"" + name + "\" is not correct.");
-        }
-    }
-
-    private static void checkParams(int numberOfJobs, int numberOfWorkers,
-                                    int capacityOfStorage, int avgInterval,
-                                    int avgProcessingTime) {
-        handleNotCorrectIntParam(numberOfJobs, "The number of jobs");
-        handleNotCorrectIntParam(numberOfWorkers, "The number of workers");
-        handleNotCorrectIntParam(capacityOfStorage, "The capacity of the storage");
-        handleNotCorrectIntParam(avgInterval, "The average job entry interval");
-        handleNotCorrectIntParam(avgProcessingTime, "The average job processing time");
-    }
 
     public static void shutdown() {
         LOGGER.info("The system is shutting down.");
         engine.shutdown();
         collectStatistics();
+        saveOutputParams();
         engine = null;
         Job.resetJobCounter();
     }
 
     private static void collectStatistics() {
-        calculateSystemUseFactor(numberOfWorkers);
-        calculateAvgJobQueueTime(numberOfJobs);
-        calculateAvgJobSystemTime(numberOfJobs);
-        calculateAvgJobQueueNumber(avgInterval);
-        calculateAvgJobSystemNumber(avgInterval);
+        calculateSystemUseFactor();
+        calculateAvgJobQueueTime();
+        calculateAvgJobSystemTime();
+        calculateAvgJobQueueNumber();
+        calculateAvgJobSystemNumber();
         calculateAbsoluteSystemThroughput();
-        calculateRelativeSystemThroughput(numberOfJobs);
+        calculateRelativeSystemThroughput();
     }
 
-    private static void calculateSystemUseFactor(final int numberOfWorkers) {
+    private static void calculateSystemUseFactor() {
         long workersUseTime = 0;
         for (Long workerUseTime : Worker.STATISTICS.values()) {
             workersUseTime += workerUseTime;
         }
         final double relativeWorkersUse = ((double) workersUseTime) / totalRunTime;
-        final double value = relativeWorkersUse / numberOfWorkers;
-        putStatistic(SYSTEM_USE_FACTOR_KEY, value);
+        QueueSystem.systemUseFactor =
+                relativeWorkersUse / QueueSystem.numberOfWorkers;
     }
 
-    private static void calculateAvgJobQueueTime(final int numberOfJobs) {
-        long sum = 0;
-        for (Map<String, Long> each : Job.STATISTICS.values()) {
-            sum += each.get(Job.IN_QUEUE_TIME);
+    private static void calculateAvgJobQueueTime() {
+        long jobQueueTimeSum = 0;
+        for (Map<String, Long> jobTimes : Job.STATISTICS.values()) {
+            jobQueueTimeSum += jobTimes.get(Job.IN_QUEUE_TIME);
         }
-        final double value = (((double) sum) / numberOfJobs) * 1000;
-        putStatistic(AVG_JOB_QUEUE_TIME_KEY, value);
+        QueueSystem.avgJobQueueTime =
+                ((double) jobQueueTimeSum) / QueueSystem.numberOfJobs;
     }
 
-    private static void calculateAvgJobSystemTime(final int numberOfJobs) {
-        long sum = 0;
-        for (Map<String, Long> each : Job.STATISTICS.values()) {
-            sum += each.get(Job.IN_SYSTEM_TIME);
+    private static void calculateAvgJobSystemTime() {
+        long jobSystemTimeSum = 0;
+        for (Map<String, Long> jobTimes : Job.STATISTICS.values()) {
+            jobSystemTimeSum += jobTimes.get(Job.IN_SYSTEM_TIME);
         }
-        final double value = (((double) sum) / numberOfJobs) * 1000;
-        putStatistic(AVG_JOB_SYSTEM_TIME_KEY, (((double) sum) / numberOfJobs) * 1000);
+        QueueSystem.avgJobSystemTime =
+                ((double) jobSystemTimeSum) / QueueSystem.numberOfJobs;
     }
 
-    private static void calculateAvgJobQueueNumber(final int avgInterval) {
-        final double value = STATISTICS.get(AVG_JOB_QUEUE_TIME_KEY) / (avgInterval * 1000);
-        putStatistic(AVG_JOB_QUEUE_NUMBER_KEY, value);
+    private static void calculateAvgJobQueueNumber() {
+        QueueSystem.avgJobQueueNumber =
+                QueueSystem.avgJobQueueTime / QueueSystem.avgInterval;
     }
 
-    private static void calculateAvgJobSystemNumber(final int avgInterval) {
-        final double value = STATISTICS.get(AVG_JOB_SYSTEM_TIME_KEY) / (avgInterval * 1000);
-        putStatistic(AVG_JOB_SYSTEM_NUMBER_KEY, value);
-        //TODO check it
+    private static void calculateAvgJobSystemNumber() {
+        QueueSystem.avgJobSystemNumber =
+                QueueSystem.avgJobSystemTime / QueueSystem.avgInterval;
     }
 
     private static void calculateAbsoluteSystemThroughput() {
-        final double value =  ((double) successfullyCompletedJobs) / (totalRunTime * 1000);
-        putStatistic(ABSOLUTE_SYSTEM_THROUGHPUT_KEY, value);
+        QueueSystem.absoluteThroughput =
+                ((double) successfullyCompletedJobs) / QueueSystem.totalRunTime;
     }
 
-    private static void calculateRelativeSystemThroughput(final int numberOfJobs) {
-        final double value = ((double) successfullyCompletedJobs) / numberOfJobs;
-        putStatistic(RELATIVE_SYSTEM_THROUGHPUT_KEY, value);
+    private static void calculateRelativeSystemThroughput() {
+        QueueSystem.relativeThroughput =
+                ((double) successfullyCompletedJobs) / QueueSystem.numberOfJobs;
     }
 
-    private static void putStatistic(String key, double statistic) {
-        STATISTICS.put(key, statistic);
-        FORMATTED_STATISTICS.put(key, String.valueOf(statistic));
-    }
 }

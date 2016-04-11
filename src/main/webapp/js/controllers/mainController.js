@@ -21,7 +21,8 @@ define(['jquery',
         const jqId = templateUtil.jqId;
         const jqElem = templateUtil.jqElem;
 
-        var outputsArr = [];
+        var inputArr = [];
+        var outputArr = [];
 
         function run(prerunChartArr) {
             render(prerunChartArr);
@@ -53,35 +54,46 @@ define(['jquery',
                 const formId = jqId(['main', 'form']);
                 const outputSelectId = jqId(['output','select','id']);
 
+                function fillParagraphsWithFields(fieldTemplateObj, fieldType) {
+                    $.each(fieldTemplateObj, function (key) {
+                        const pElem = jqElem([key, 'id']);
+                        const fieldElem = jqElem([key, fieldType, 'id']);
+                        pElem.text(pElem.text().split(':')[0] + ": " + fieldElem.val());
+                    });
+                }
+
+                function fillParagraphsWithObj(fieldTemplateObj, inputObj) {
+                    inputObj['runs'] = 1;
+                    inputObj['seed'] = '';
+                    $.each(fieldTemplateObj, function (key) {
+                        const pElem = jqElem([key, 'id']);
+                        pElem.text(pElem.text().split(':')[0] + ": " + inputObj[key]);
+                    });
+                }
+
                 function runButtonEvent() {
                     cssUtil.disable(runButtonId);
-                    function fillSuitableParagraphs(fieldTemplateObj, fieldType) {
-                        $.each(fieldTemplateObj, function (key) {
-                            const pElem = jqElem([key, 'id']);
-                            const fieldElem = jqElem([key, fieldType, 'id']);
-                            pElem.text(pElem.text().split(':')[0] + ": " + fieldElem.val());
-                        });
-                    }
-
-                    fillSuitableParagraphs(templateUtil.inputFields(), templateUtil.fieldTypes().INPUT);
-                    fillSuitableParagraphs(templateUtil.selectFields(), templateUtil.fieldTypes().SELECT);
-
+                    fillParagraphsWithFields(templateUtil.inputFields(), templateUtil.fieldTypes().INPUT);
+                    fillParagraphsWithFields(templateUtil.selectFields(), templateUtil.fieldTypes().SELECT);
                     $(runButtonSignId).text('Wait...');
-                    $.post("/run", $(formId).serialize())
-                        .done(function (outputObj) {
-                            $(runButtonSignId).text(outputObj.status);
+                    $.post('/run', $(formId).serialize())
+                        .done(function (ioObj) {
+                            const status = ioObj['status'];
+                            inputArr = ioObj['input'];
+                            outputArr = ioObj['output'];
+                            $(runButtonSignId).text(ioObj.status);
                             cssUtil.enable(runButtonId);
                             webSocketController.sendWsMessageRequest('stopLog');
-                            outputsArr.push(outputObj);
                             cssUtil.enable(outputSelectId);
                             const outputSelect = $(outputSelectId);
                             outputSelect.empty();
-                            $.each(outputsArr, function (index) {
+                            $.each(outputArr, function (index) {
                                 const option = $('<option/>');
                                 option.text(index + 1);
                                 outputSelect.append(option);
                             });
-                            output(outputObj);
+                            $(outputSelectId + "  option:last").prop('selected', true);
+                            output(outputArr[outputArr.length - 1]);
                         });
                     $(formId).trigger('reset');
                     $(jqId(['log'])).val('');
@@ -104,7 +116,9 @@ define(['jquery',
                 const outputSelect = $(outputSelectId);
                 outputSelect.on('change', function() {
                     const index = outputSelect.val();
-                    output(outputsArr[index - 1]);
+                    output(outputArr[index - 1]);
+                    fillParagraphsWithObj(templateUtil.inputFields(), inputArr[index - 1]);
+                    fillParagraphsWithObj(templateUtil.selectFields(), inputArr[index - 1]);
                 });
 
             }

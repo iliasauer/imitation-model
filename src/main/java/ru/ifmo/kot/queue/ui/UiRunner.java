@@ -94,7 +94,7 @@ public class UiRunner implements Runnable {
             public void ignore(Throwable ignored) {
 
             }
-        }); // just to remove extra messages
+        }); // to remove extra messages
     }
 
     private Server server = null;
@@ -121,7 +121,6 @@ public class UiRunner implements Runnable {
     @Override
     public void run() {
 
-
         WebAppContext ctx = new WebAppContext();
         ctx.setContextPath(CONTEXT_PATH);
         ctx.setDescriptor(WEBXML_LOCATION);
@@ -133,14 +132,8 @@ public class UiRunner implements Runnable {
             server.start();
             LOGGER.debug("The UI server started.");
         } catch (Exception e) {
-            LOGGER.error("The UI server cannot started.", e);
+            LOGGER.debug("The UI server cannot started.", e);
         }
-        // todo check is it necessary to get it back
-//        try {
-//            server.join();
-//        } catch (InterruptedException e) {
-//            LOGGER.error("UI server internal error.", e);
-//        }
     }
 
 

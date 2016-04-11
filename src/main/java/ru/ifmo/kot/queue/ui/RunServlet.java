@@ -50,7 +50,7 @@ public class RunServlet extends HttpServlet {
         final String processParam = request.getParameter("process-input");
         final String runsParam = request.getParameter("runs-input");
         final String seedParam = request.getParameter("seed-input");
-        Map<String, String> responseMap = new HashMap<>();
+        Map<String, Object> responseMap = new HashMap<>();
         if (validateParams(jobsParam, workersParam, storageParam,
                 disciplineParam, intervalParam, processParam,
                 runsParam, seedParam) && validateSeed(seedParam)) {
@@ -59,10 +59,10 @@ public class RunServlet extends HttpServlet {
         } else {
             responseMap.put("status", "Parameters are invalid.");
         }
-        responseMap.putAll(QueueSystem.FORMATTED_STATISTICS);
+        responseMap.putAll(QueueSystem.IO_MAP);
         String json = MAPPER.writeValueAsString(responseMap);
         response.setContentType(MimeTypes.Type.APPLICATION_JSON.toString());
-        response.getWriter().write(json);;
+        response.getWriter().write(json);
     }
 
     private boolean validateParams(String ... params) {

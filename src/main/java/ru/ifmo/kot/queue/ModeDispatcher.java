@@ -51,7 +51,8 @@ public class ModeDispatcher {
     }
 
     private static void logAndExit(final String message, final Throwable t) {
-        LOGGER.error(message, t);
+        LOGGER.error(message);
+        LOGGER.debug("", t);
         System.exit(COMMAND_NOT_FOUND_CODE);
     }
 

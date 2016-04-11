@@ -2,15 +2,21 @@ package ru.ifmo.kot.queue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.ifmo.kot.queue.system.Input;
+import ru.ifmo.kot.queue.system.Output;
 import ru.ifmo.kot.queue.system.QueueSystem;
+import ru.ifmo.kot.queue.system.Statistics;
 import ru.ifmo.kot.queue.system.storage.StorageFactory;
 import ru.ifmo.kot.queue.system.storage.Discipline;
 import ru.ifmo.kot.queue.util.random.RandomGenerator;
 
+import java.util.List;
+import java.util.Map;
+
 public class CliRunner implements Runnable {
 
     private static final Logger LOGGER = LogManager.getLogger(CliRunner.class);
-    private static final StringBuilder startInfoBuilder = new StringBuilder();
+    private static final StringBuilder startStopInfoBuilder = new StringBuilder();
 
     private static boolean hasBeenStarted = false;
 
@@ -37,7 +43,7 @@ public class CliRunner implements Runnable {
         this.generatorSeed = generatorSeed;
     }
 
-    public static void start(String ... args) {
+    public static void start(String ... args) throws IllegalArgumentException {
         final int jobs, workers,
                 storage, interval,
                 process, runs, generatorSeed;
@@ -62,10 +68,11 @@ public class CliRunner implements Runnable {
             if (discipline == null) {
                 throw new IllegalArgumentException();
             }
+            checkParams(jobs, workers, storage, interval, process);
         } else {
             // the default configuration
-            jobs = 10;
-            workers = 10;
+            jobs = 100;
+            workers = 6;
             storage = 10;
             interval = 180;
             process = 60;
@@ -74,6 +81,10 @@ public class CliRunner implements Runnable {
             generatorSeed = RandomGenerator.SEED_1;
         }
         if (!hasBeenStarted) {
+            LOGGER.info(getStartInfo(jobs, workers,
+                    storage, discipline,
+                    interval, process,
+                    runs, generatorSeed));
             new CliRunner(jobs, workers,
                     storage, discipline,
                     interval, process,
@@ -84,31 +95,81 @@ public class CliRunner implements Runnable {
         }
     }
 
-    private String getStartInfo() {
-        startInfoBuilder.setLength(0);
-        startInfoBuilder.append("The number of jobs: ").append(jobs).append("\n");
-        startInfoBuilder.append("The number of workers: ").append(workers).append("\n");
-        startInfoBuilder.append("The storage capacity: ").append(storage).append("\n");
-        startInfoBuilder.append("The service discipline: ").append(discipline.name()).append("\n");
-        startInfoBuilder.append("The average job entry interval: ").append(interval).append("\n");
-        startInfoBuilder.append("The average job processing time: ").append(process).append("\n");
-        startInfoBuilder.append("The number of runs: ").append(runs).append("\n");
-        startInfoBuilder.append("The generator seed: ").append(generatorSeed).append("\n");
-        return startInfoBuilder.toString();
+    private static String getStartInfo(int jobs, int workers,
+                                int storage, Discipline discipline, int interval,
+                                int process, int runs, int generatorSeed) {
+        startStopInfoBuilder.setLength(0);
+        startStopInfoBuilder.append("The ")
+                .append(QueueSystem.RUN_PARAM_NAMES.get(Input.NUMBER_OF_JOBS_KEY))
+                .append(": ").append(jobs).append("\n");
+        startStopInfoBuilder.append("The ")
+                .append(QueueSystem.RUN_PARAM_NAMES.get(Input.NUMBER_OF_WORKERS_KEY))
+                .append(": ").append(workers).append("\n");
+        startStopInfoBuilder.append("The ")
+                .append(QueueSystem.RUN_PARAM_NAMES.get(Input.STORAGE_CAPACITY_KEY))
+                .append(": ").append(storage).append("\n");
+        startStopInfoBuilder.append("The ")
+                .append(QueueSystem.RUN_PARAM_NAMES.get(Input.SERVICE_DISCIPLINE_KEY))
+                .append(": ").append(discipline.name()).append("\n");
+        startStopInfoBuilder.append("The ")
+                .append(QueueSystem.RUN_PARAM_NAMES.get(Input.INTERVAL_KEY))
+                .append(": ").append(interval).append("\n");
+        startStopInfoBuilder.append("The ")
+                .append(QueueSystem.RUN_PARAM_NAMES.get(Input.PROCESS_TIME_KEY))
+                .append(": ").append(process).append("\n");
+        startStopInfoBuilder.append("The ")
+                .append("The number of runs: ").append(runs).append("\n");
+        startStopInfoBuilder.append("The ")
+                .append("The generator seed: ").append(generatorSeed).append("\n");
+        return startStopInfoBuilder.toString();
+    }
+
+    private static String getStopInfo() {
+        startStopInfoBuilder.setLength(0);
+        List<Map<String, String>> outputList = QueueSystem.IO_MAP.get(Statistics.OUTPUT_KEY);
+        Map<String, String> outputMap = outputList.get(outputList.size() - 1);
+        String[] outputKeys = {Output.SYSTEM_USE_FACTOR_KEY, Output.AVG_JOB_QUEUE_TIME_KEY,
+                Output.AVG_JOB_SYSTEM_TIME_KEY, Output.AVG_JOB_QUEUE_NUMBER_KEY,
+                Output.AVG_JOB_SYSTEM_NUMBER_KEY, Output.ABSOLUTE_SYSTEM_THROUGHPUT_KEY,
+                Output.RELATIVE_SYSTEM_THROUGHPUT_KEY};
+        for (String outputKey: outputKeys) {
+            startStopInfoBuilder.append("The ")
+                    .append(QueueSystem.OUTPUT_PARAM_NAMES.get(outputKey))
+                    .append(": ").append(outputMap.get(outputKey)).append("\n");
+        }
+        return startStopInfoBuilder.toString();
     }
 
 
     @Override
     public void run() {
-        RandomGenerator.Builder generatorBuilder = RandomGenerator.newBuilder();
+        final RandomGenerator.Builder generatorBuilder = RandomGenerator.newBuilder();
         generatorBuilder.setSeed(generatorSeed);
-        LOGGER.info(getStartInfo());
         for (int i = 0; i < runs; i++) {
             LOGGER.info("Run #" + (i + 1));
             QueueSystem.run(jobs, workers,
                     storage, discipline,
                     interval, process, generatorBuilder);
             QueueSystem.shutdown();
+            LOGGER.info(getStopInfo());
         }
+    }
+
+    private static void handleNotCorrectIntParam(int param, String name) throws
+            IllegalArgumentException {
+        if (param <= 0) {
+            LOGGER.error("The parameter \"" + name + "\" is not correct.");
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private static void checkParams(int jobs, int workers,
+                                    int storage, int interval,
+                                    int process) throws IllegalArgumentException {
+        handleNotCorrectIntParam(jobs, QueueSystem.RUN_PARAM_NAMES.get(Input.NUMBER_OF_JOBS_KEY));
+        handleNotCorrectIntParam(workers, QueueSystem.RUN_PARAM_NAMES.get(Input.NUMBER_OF_WORKERS_KEY));
+        handleNotCorrectIntParam(storage, QueueSystem.RUN_PARAM_NAMES.get(Input.STORAGE_CAPACITY_KEY));
+        handleNotCorrectIntParam(interval, QueueSystem.RUN_PARAM_NAMES.get(Input.INTERVAL_KEY));
+        handleNotCorrectIntParam(process, QueueSystem.RUN_PARAM_NAMES.get(Input.PROCESS_TIME_KEY));
     }
 }
