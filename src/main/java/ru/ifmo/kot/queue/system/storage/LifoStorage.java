@@ -45,7 +45,7 @@ class LifoStorage<T> extends LinkedBlockingDeque<T> {
                 Job.STATISTICS.get(jobNumber).put(
                         Job.IN_QUEUE_TIME, System.currentTimeMillis() - job.getOpenJobTime());
             }
-            LOGGER.info(action + " the job#" + jobNumber + " "  + direction + " the storage");
+            LOGGER.debug(action + " the job #" + jobNumber + " "  + direction + " the storage");
         }
     }
 }

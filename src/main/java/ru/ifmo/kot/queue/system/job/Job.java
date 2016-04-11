@@ -83,7 +83,6 @@ public class Job implements Runnable {
     }
 
     private void printStateDescription(State state) {
-//		System.out.println(getStateDescription(state));
         if (number() == 1 && state.equals(State.OPEN)) {
             LOCAL_LOGGER.append("The run #").append(runsCounter).append(".\n");
         }
@@ -152,6 +151,6 @@ public class Job implements Runnable {
     private void logInfo(final String info) {
         LOCAL_LOGGER.append(DATE_FORMAT.format(System.currentTimeMillis())).append(" - ")
                 .append(info).append("\n");
-        LOGGER.info(info);
+        LOGGER.debug(info);
     }
 }

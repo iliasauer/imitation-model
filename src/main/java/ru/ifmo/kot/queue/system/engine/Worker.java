@@ -23,13 +23,13 @@ public class Worker extends Thread {
 
     @Override
     public void run() {
-        LOGGER.info(this.getName() + " starts." );
+        LOGGER.debug(this.getName() + " starts." );
         super.run();
     }
 
     @Override
     public void interrupt() {
-        LOGGER.info(this.getName() + " stops." );
+        LOGGER.debug(this.getName() + " stops." );
         STATISTICS.put(this.getName(), jobProcessTime);
         super.interrupt();
     }

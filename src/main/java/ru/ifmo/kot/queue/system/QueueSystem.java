@@ -48,8 +48,10 @@ public class QueueSystem {
     }
 
     private static Engine engine = null;
+    @SuppressWarnings("unused")
     private static int numberOfJobs, numberOfWorkers, capacityOfStorage,
             avgInterval, avgProcessTime;
+    @SuppressWarnings("unused")
     private static String discipline;
     private static long startRunTime, finishRunTime, totalRunTime, successfullyCompletedJobs;
     private static double systemUseFactor, avgJobQueueTime, avgJobSystemTime,
@@ -74,7 +76,7 @@ public class QueueSystem {
         saveInputParams(numberOfJobs, numberOfWorkers, capacityOfStorage,
                 discipline, avgInterval, avgProcessTime);
         int counter = 0;
-        LOGGER.info("The system starts running.");
+        LOGGER.debug("The system starts running.");
         final List<Future<?>> futures = new ArrayList<>();
         setStartRunTime();
         while (counter < numberOfJobs) {
@@ -100,7 +102,7 @@ public class QueueSystem {
         QueueSystem.processSeed = processSeed;
     }
 
-    public static void setSeed(final int seed) {
+    private static void setSeed(final int seed) {
         if (seed == 0) {
             QueueSystem.setSeed(RandomGenerator.SEED_1, RandomGenerator.SEED_2);
         } else {
@@ -189,7 +191,7 @@ public class QueueSystem {
 
 
     public static void shutdown() {
-        LOGGER.info("The system is shutting down.");
+        LOGGER.debug("The system is shutting down.");
         engine.shutdown();
         collectStatistics();
         saveOutputParams();
@@ -206,6 +208,8 @@ public class QueueSystem {
         calculateAvgJobSystemNumber();
         calculateAbsoluteSystemThroughput();
         calculateRelativeSystemThroughput();
+        Worker.STATISTICS.clear();
+        Job.STATISTICS.clear();
     }
 
     private static void calculateSystemUseFactor() {
@@ -213,6 +217,7 @@ public class QueueSystem {
         for (Long workerUseTime : Worker.STATISTICS.values()) {
             workersUseTime += workerUseTime;
         }
+
         final double relativeWorkersUse = ((double) workersUseTime) / totalRunTime;
         QueueSystem.systemUseFactor =
                 relativeWorkersUse / QueueSystem.numberOfWorkers;
