@@ -27,12 +27,12 @@ public class CliRunner implements Runnable {
     private final int interval;
     private final int process;
     private final int runs;
-    private final int generatorSeed;
+    private final int seed;
 
     public CliRunner(int jobs, int workers,
                      int storage, Discipline discipline,
                      int interval, int process,
-                     int runs, int generatorSeed) {
+                     int runs, int seed) {
         this.jobs = jobs;
         this.workers = workers;
         this.storage = storage;
@@ -40,13 +40,13 @@ public class CliRunner implements Runnable {
         this.interval = interval;
         this.process = process;
         this.runs = runs;
-        this.generatorSeed = generatorSeed;
+        this.seed = seed;
     }
 
     public static void start(String ... args) throws IllegalArgumentException {
         final int jobs, workers,
                 storage, interval,
-                process, runs, generatorSeed;
+                process, runs, seed;
         final Discipline discipline;
         if (args.length != 0) {
             jobs = Integer.parseInt(args[0]);
@@ -60,9 +60,9 @@ public class CliRunner implements Runnable {
                 runs = 1;
             }
             if (args.length == 8) {
-                generatorSeed = Integer.parseInt(args[7]);
+                seed = Integer.parseInt(args[7]);
             } else {
-                generatorSeed = RandomGenerator.SEED_1;
+                seed = 0;
             }
             discipline = StorageFactory.getDiscipline(args[3]);
             if (discipline == null) {
@@ -78,17 +78,17 @@ public class CliRunner implements Runnable {
             process = 60;
             discipline = Discipline.LIFO;
             runs = 2;
-            generatorSeed = RandomGenerator.SEED_1;
+            seed = RandomGenerator.SEED_1;
         }
         if (!hasBeenStarted) {
             LOGGER.info(getStartInfo(jobs, workers,
                     storage, discipline,
                     interval, process,
-                    runs, generatorSeed));
+                    runs, seed));
             new CliRunner(jobs, workers,
                     storage, discipline,
                     interval, process,
-                    runs, generatorSeed).run();
+                    runs, seed).run();
             hasBeenStarted = true;
         } else {
             LOGGER.error("The command line mode has already started");
@@ -143,13 +143,11 @@ public class CliRunner implements Runnable {
 
     @Override
     public void run() {
-        final RandomGenerator.Builder generatorBuilder = RandomGenerator.newBuilder();
-        generatorBuilder.setSeed(generatorSeed);
         for (int i = 0; i < runs; i++) {
             LOGGER.info("Run #" + (i + 1));
             QueueSystem.run(jobs, workers,
                     storage, discipline,
-                    interval, process, generatorBuilder);
+                    interval, process, seed);
             QueueSystem.shutdown();
             LOGGER.info(getStopInfo());
         }

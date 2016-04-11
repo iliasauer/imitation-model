@@ -26,6 +26,8 @@ public class QueueSystem {
     private static final Logger LOGGER = LogManager.getLogger(QueueSystem.class);
 
     public static final Map<String, String> RUN_PARAM_NAMES = new HashMap<>();
+    public static final Map<String, String> OUTPUT_PARAM_NAMES = new HashMap<>();
+    public static final Map<String, List<Map<String, String>>> IO_MAP = new HashMap<>();
 
     static {
         RUN_PARAM_NAMES.put(Input.NUMBER_OF_JOBS_KEY, "number of jobs");
@@ -34,11 +36,6 @@ public class QueueSystem {
         RUN_PARAM_NAMES.put(Input.SERVICE_DISCIPLINE_KEY, "service discipline");
         RUN_PARAM_NAMES.put(Input.INTERVAL_KEY, "average job entry interval");
         RUN_PARAM_NAMES.put(Input.PROCESS_TIME_KEY, "average job processing time");
-    }
-
-    public static final Map<String, String> OUTPUT_PARAM_NAMES = new HashMap<>();
-
-    static {
         OUTPUT_PARAM_NAMES.put(Output.SYSTEM_USE_FACTOR_KEY, "system use factor");
         OUTPUT_PARAM_NAMES.put(Output.AVG_JOB_QUEUE_TIME_KEY, "average job queue waiting time");
         OUTPUT_PARAM_NAMES.put(Output.AVG_JOB_SYSTEM_TIME_KEY, "average job system standing time");
@@ -46,11 +43,6 @@ public class QueueSystem {
         OUTPUT_PARAM_NAMES.put(Output.AVG_JOB_SYSTEM_NUMBER_KEY, "average job system number over time");
         OUTPUT_PARAM_NAMES.put(Output.ABSOLUTE_SYSTEM_THROUGHPUT_KEY, "absolute system throughput");
         OUTPUT_PARAM_NAMES.put(Output.RELATIVE_SYSTEM_THROUGHPUT_KEY, "relative system throughput");
-    }
-
-    public static final Map<String, List<Map<String, String>>> IO_MAP = new HashMap<>();
-
-    static {
         IO_MAP.put(Statistics.INPUT_KEY, new ArrayList<Map<String, String>>());
         IO_MAP.put(Statistics.OUTPUT_KEY, new ArrayList<Map<String, String>>());
     }
@@ -60,17 +52,25 @@ public class QueueSystem {
             avgInterval, avgProcessTime;
     private static String discipline;
     private static long startRunTime, finishRunTime, totalRunTime, successfullyCompletedJobs;
-
     private static double systemUseFactor, avgJobQueueTime, avgJobSystemTime,
             avgJobQueueNumber, avgJobSystemNumber, absoluteThroughput, relativeThroughput;
+    private static int intervalSeed = 0;
+    private static int processSeed = 0;
+    private static boolean isFirst = true;
 
     public static void run(int numberOfJobs, int numberOfWorkers,
                            int capacityOfStorage, Discipline discipline,
                            int avgInterval, int avgProcessTime,
-                           RandomGenerator.Builder generatorBuilder) {
+                           int seed) {
+        if (isFirst) {
+            setSeed(seed);
+        }
         engine = new Engine(numberOfWorkers, capacityOfStorage, discipline);
-        RandomGenerator intervalGenerator = getRandomGenerator(generatorBuilder, avgInterval);
-        RandomGenerator processGenerator = getRandomGenerator(generatorBuilder, avgProcessTime);
+        RandomGenerator.Builder generatorBuilder = RandomGenerator.newBuilder();
+        RandomGenerator intervalGenerator = getRandomGenerator(generatorBuilder,
+                intervalSeed, avgInterval);
+        RandomGenerator processGenerator = getRandomGenerator(generatorBuilder,
+                processSeed, avgProcessTime);
         saveInputParams(numberOfJobs, numberOfWorkers, capacityOfStorage,
                 discipline, avgInterval, avgProcessTime);
         int counter = 0;
@@ -95,7 +95,22 @@ public class QueueSystem {
         LOGGER.info("The total run time: " + totalRunTimeString());
     }
 
-    private static RandomGenerator getRandomGenerator(RandomGenerator.Builder builder, int goal) {
+    private static void setSeed(final int intervalSeed, final int processSeed) {
+        QueueSystem.intervalSeed = intervalSeed;
+        QueueSystem.processSeed = processSeed;
+    }
+
+    public static void setSeed(final int seed) {
+        if (seed == 0) {
+            QueueSystem.setSeed(RandomGenerator.SEED_1, RandomGenerator.SEED_2);
+        } else {
+            QueueSystem.setSeed(seed, seed);
+        }
+    }
+
+    private static RandomGenerator getRandomGenerator(RandomGenerator.Builder builder, int seed,
+                                                      int goal) {
+        builder.setSeed(seed);
         builder.setGoal(goal);
         return builder.build();
     }
@@ -132,11 +147,13 @@ public class QueueSystem {
     }
 
     private static int generateJobComplexity(final RandomGenerator generator) {
-        return generator.nextInt();
+        processSeed = generator.nextInt();
+        return processSeed;
     }
 
     private static long generateJobEntryInterval(final RandomGenerator generator) {
-        return generator.nextInt();
+        intervalSeed = generator.nextInt();
+        return intervalSeed;
     }
 
     private static void setStartRunTime() {
@@ -178,6 +195,7 @@ public class QueueSystem {
         saveOutputParams();
         engine = null;
         Job.resetJobCounter();
+        isFirst = false;
     }
 
     private static void collectStatistics() {
