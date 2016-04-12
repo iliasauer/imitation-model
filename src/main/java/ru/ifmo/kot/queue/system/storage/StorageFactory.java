@@ -4,6 +4,12 @@ import java.util.concurrent.BlockingQueue;
 
 public class StorageFactory {
 
+    private static BlockingQueue<Runnable> currentStorage;
+
+    public static int currentStorageSize() {
+        return currentStorage.size();
+    }
+
     public static Discipline getDiscipline(String disciplineName) {
         for (Discipline discipline: Discipline.values()) {
             if (disciplineName.equalsIgnoreCase(discipline.name())) {
@@ -16,9 +22,11 @@ public class StorageFactory {
     public static BlockingQueue<Runnable> createStorage(Discipline discipline, int capacity) {
         switch (discipline) {
             case LIFO:
-                return new LifoStorage<>(capacity);
+                currentStorage = new LifoStorage<>(capacity);
+                return currentStorage;
             default:
-                return new FifoStorage<>(capacity);
+                currentStorage = new FifoStorage<>(capacity);
+                return currentStorage;
         }
     }
 
