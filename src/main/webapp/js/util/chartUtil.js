@@ -1,17 +1,15 @@
 define([
         'jquery',
         'handlebars',
-        'Chart',
+        'ScatterChart',
         'Scatter',
-        'Chart2',
-        'Chart3',
+        'ChartFork',
         './templateUtil'],
     function ($,
               Handlebars,
               Chart,
-              Scatter,
-              Chart2,
-              Chart3,
+              ScatterChart,
+              ChartFork,
               templateUtil) {
 
         function drawPointChart(id, label, values) {
@@ -20,7 +18,7 @@ define([
                 label: label,
                 data: values
             }];
-            new Chart(ctx).Scatter(chartData, {
+            new ScatterChart(ctx).Scatter(chartData, {
                 datasetStroke: false,
                 responsive: true,
                 hoverMode: 'single',
@@ -67,14 +65,14 @@ define([
                 }]
             };
             const ctx = document.getElementById(id).getContext("2d");
-            new Chart2(ctx).Overlay(overlayData, {
+            new ChartFork(ctx).Overlay(overlayData, {
                 populateSparseData: true,
                 overlayBars: false
             });
         }
 
         // function drawIndexLineChart(id, values) {
-        //     const ctx = document.getElementById(id).getContext("2d");
+        //     const ctx = document.getElementById(id).getContext('2d');
         //     var labels = [];
         //     for (var i = 0; i < values.length; i++) {
         //         labels.push(i);
@@ -84,17 +82,15 @@ define([
         //         datasets: [
         //             {
         //                 label: id,
-        //                 fillColor: "rgba(220,220,220,0.2)",
-        //                 strokeColor: "rgba(220,220,220,1)",
-        //                 pointColor: "rgba(220,220,220,1)",
-        //                 pointStrokeColor: "#fff",
-        //                 pointHighlightFill: "#fff",
-        //                 pointHighlightStroke: "rgba(220,220,220,1)",
+        //                 fillColor: 'rgba(172,194,132,0.4)',
+        //                 strokeColor: "#ACC26D",
+        //                 pointColor: "#fff",
+        //                 pointStrokeColor: "#9DB86D",
         //                 data: values
         //             }
         //         ]
         //     }];
-        //     new Chart2(ctx).Line(chartData, {});
+        //     new Chart3(ctx).Line(chartData);
         // }
 
         function drawPrerunPointCharts(chartArr) {

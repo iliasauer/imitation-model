@@ -155,7 +155,7 @@ define(['jquery',
             renderChartWindow();
             bindEvents();
             drawPrerunCharts();
-
+            // pureChartUtil.drawIndexLineChart('test-canvas', [26, 35, 464, 789, 4156]);
             webSocketController.connectWs();
         }
         

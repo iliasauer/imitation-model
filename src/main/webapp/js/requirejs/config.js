@@ -4,9 +4,14 @@ requirejs.config({
         'jquery': ['libs/jquery', 'jquery'],
         'handlebars': ['libs/handlebars', 'handlebars'],
         'text': ['libs/text', 'text'],
-        'Chart': ['libs/Chart', 'Chart'],
-        'Chart2': ['libs/Chart2', 'Chart2'],
-        'Chart3': ['libs/Chart3', 'Chart3'],
+        'ScatterChart': ['libs/ScatterChart', 'ScatterChart'],
+        'ChartFork': ['libs/ChartFork', 'ChartFork'],
         'Scatter': ['libs/Scatter', 'Scatter']
+    },
+    map: {
+        'Scatter': {
+            'Chart': 'ScatterChart'
+        }
     }
+
 });
