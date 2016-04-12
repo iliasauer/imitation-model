@@ -23,6 +23,7 @@ define(['jquery',
 
         var inputArr = [];
         var outputArr = [];
+        var chartsArr = [];
 
         function run(prerunChartArr) {
             render(prerunChartArr);
@@ -44,7 +45,8 @@ define(['jquery',
 
             function renderChartWindow() {
                 hbUtil.compileAndInsertAfter(jqId(['main', 'block']), chartWindowTemplate,
-                    {prerunCharts: templateUtil.prerunCharts()});
+                    {prerunCharts: templateUtil.prerunCharts(),
+                     postrunCharts: templateUtil.postrunCharts()});
             }
 
             function bindEvents() {
@@ -81,6 +83,7 @@ define(['jquery',
                             const status = ioObj['status'];
                             inputArr = ioObj['input'];
                             outputArr = ioObj['output'];
+                            chartsArr = ioObj['charts'];
                             $(runButtonSignId).text(ioObj.status);
                             cssUtil.enable(runButtonId);
                             webSocketController.sendWsMessageRequest('stopLog');
@@ -94,6 +97,13 @@ define(['jquery',
                             });
                             $(outputSelectId + "  option:last").prop('selected', true);
                             output(outputArr[outputArr.length - 1]);
+                            $.each(chartsArr, function (index, chartObj) {
+                                // chartUtil.drawIndexLineChart(plainId([chartObj.name,'id']), chartObj.values);
+                            });
+                            $.each(templateUtil.postrunCharts(), function (objKey) {
+                                const buttonId = jqId([objKey, 'button', 'id']);
+                                cssUtil.enable(buttonId);
+                            });
                         });
                     $(formId).trigger('reset');
                     $(jqId(['log'])).val('');
@@ -111,6 +121,14 @@ define(['jquery',
                         $(chartId).toggle('slow');
                     });
                     $(chartId).toggle(1);
+                });
+                $.each(templateUtil.postrunCharts(), function (objKey) {
+                    const buttonId = jqId([objKey, 'button', 'id']);
+                    const chartId = jqId([objKey, 'id']);
+                    $(buttonId).click(function () {
+                        $(chartId).toggle('slow');
+                    });
+                    cssUtil.disable(buttonId);
                 });
 
                 const outputSelect = $(outputSelectId);

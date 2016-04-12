@@ -1,6 +1,6 @@
 package ru.ifmo.kot.queue.system;
 
-public interface Output {
+public interface OutputData {
     String SYSTEM_USE_FACTOR_KEY = "systemUseFactor";
     String AVG_JOB_QUEUE_TIME_KEY = "avgJobQueueTime";
     String AVG_JOB_SYSTEM_TIME_KEY = "avgJobSystemTime";

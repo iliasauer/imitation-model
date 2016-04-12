@@ -60,7 +60,9 @@ public class RunServlet extends HttpServlet {
             responseMap.put("status", "Parameters are invalid.");
         }
         responseMap.putAll(QueueSystem.IO_MAP);
+        responseMap.put("charts", QueueSystem.CHART_LIST);
         String json = MAPPER.writeValueAsString(responseMap);
+        QueueSystem.CHART_LIST.clear();
         response.setContentType(MimeTypes.Type.APPLICATION_JSON.toString());
         response.getWriter().write(json);
     }

@@ -8,6 +8,9 @@ body {
 .chart-btn {
     margin-left: 10px;
     margin-bottom: 10px;
+    white-space:normal !important;
+    width: 200px;
+    max-width: 200px;
 }
 .chart-canvas {
     max-width: 600px;

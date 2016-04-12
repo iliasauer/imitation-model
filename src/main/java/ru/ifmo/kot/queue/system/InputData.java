@@ -1,6 +1,6 @@
 package ru.ifmo.kot.queue.system;
 
-public interface Input {
+public interface InputData {
     String NUMBER_OF_JOBS_KEY = "jobs";
     String NUMBER_OF_WORKERS_KEY = "workers";
     String STORAGE_CAPACITY_KEY = "storage";

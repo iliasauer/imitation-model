@@ -2,13 +2,12 @@ package ru.ifmo.kot.queue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.ifmo.kot.queue.system.Input;
-import ru.ifmo.kot.queue.system.Output;
+import ru.ifmo.kot.queue.system.InputData;
+import ru.ifmo.kot.queue.system.OutputData;
 import ru.ifmo.kot.queue.system.QueueSystem;
 import ru.ifmo.kot.queue.system.Statistics;
 import ru.ifmo.kot.queue.system.storage.StorageFactory;
 import ru.ifmo.kot.queue.system.storage.Discipline;
-import ru.ifmo.kot.queue.util.random.RandomGenerator;
 
 import java.util.List;
 import java.util.Map;
@@ -101,22 +100,22 @@ public class CliRunner implements Runnable {
                                 int process, int runs, int generatorSeed) {
         startStopInfoBuilder.setLength(0);
         startStopInfoBuilder.append("The ")
-                .append(QueueSystem.RUN_PARAM_NAMES.get(Input.NUMBER_OF_JOBS_KEY))
+                .append(QueueSystem.RUN_PARAM_NAMES.get(InputData.NUMBER_OF_JOBS_KEY))
                 .append(": ").append(jobs).append("\n");
         startStopInfoBuilder.append("The ")
-                .append(QueueSystem.RUN_PARAM_NAMES.get(Input.NUMBER_OF_WORKERS_KEY))
+                .append(QueueSystem.RUN_PARAM_NAMES.get(InputData.NUMBER_OF_WORKERS_KEY))
                 .append(": ").append(workers).append("\n");
         startStopInfoBuilder.append("The ")
-                .append(QueueSystem.RUN_PARAM_NAMES.get(Input.STORAGE_CAPACITY_KEY))
+                .append(QueueSystem.RUN_PARAM_NAMES.get(InputData.STORAGE_CAPACITY_KEY))
                 .append(": ").append(storage).append("\n");
         startStopInfoBuilder.append("The ")
-                .append(QueueSystem.RUN_PARAM_NAMES.get(Input.SERVICE_DISCIPLINE_KEY))
+                .append(QueueSystem.RUN_PARAM_NAMES.get(InputData.SERVICE_DISCIPLINE_KEY))
                 .append(": ").append(discipline.name()).append("\n");
         startStopInfoBuilder.append("The ")
-                .append(QueueSystem.RUN_PARAM_NAMES.get(Input.INTERVAL_KEY))
+                .append(QueueSystem.RUN_PARAM_NAMES.get(InputData.INTERVAL_KEY))
                 .append(": ").append(interval).append("\n");
         startStopInfoBuilder.append("The ")
-                .append(QueueSystem.RUN_PARAM_NAMES.get(Input.PROCESS_TIME_KEY))
+                .append(QueueSystem.RUN_PARAM_NAMES.get(InputData.PROCESS_TIME_KEY))
                 .append(": ").append(process).append("\n");
         startStopInfoBuilder.append("The ")
                 .append("number of runs: ").append(runs).append("\n");
@@ -135,10 +134,10 @@ public class CliRunner implements Runnable {
         startStopInfoBuilder.setLength(0);
         List<Map<String, String>> outputList = QueueSystem.IO_MAP.get(Statistics.OUTPUT_KEY);
         Map<String, String> outputMap = outputList.get(outputList.size() - 1);
-        String[] outputKeys = {Output.SYSTEM_USE_FACTOR_KEY, Output.AVG_JOB_QUEUE_TIME_KEY,
-                Output.AVG_JOB_SYSTEM_TIME_KEY, Output.AVG_JOB_QUEUE_NUMBER_KEY,
-                Output.AVG_JOB_SYSTEM_NUMBER_KEY, Output.ABSOLUTE_SYSTEM_THROUGHPUT_KEY,
-                Output.RELATIVE_SYSTEM_THROUGHPUT_KEY};
+        String[] outputKeys = {OutputData.SYSTEM_USE_FACTOR_KEY, OutputData.AVG_JOB_QUEUE_TIME_KEY,
+                OutputData.AVG_JOB_SYSTEM_TIME_KEY, OutputData.AVG_JOB_QUEUE_NUMBER_KEY,
+                OutputData.AVG_JOB_SYSTEM_NUMBER_KEY, OutputData.ABSOLUTE_SYSTEM_THROUGHPUT_KEY,
+                OutputData.RELATIVE_SYSTEM_THROUGHPUT_KEY};
         for (String outputKey: outputKeys) {
             startStopInfoBuilder.append("The ")
                     .append(QueueSystem.OUTPUT_PARAM_NAMES.get(outputKey))
@@ -172,10 +171,10 @@ public class CliRunner implements Runnable {
     private static void checkParams(int jobs, int workers,
                                     int storage, int interval,
                                     int process) throws IllegalArgumentException {
-        handleNotCorrectIntParam(jobs, QueueSystem.RUN_PARAM_NAMES.get(Input.NUMBER_OF_JOBS_KEY));
-        handleNotCorrectIntParam(workers, QueueSystem.RUN_PARAM_NAMES.get(Input.NUMBER_OF_WORKERS_KEY));
-        handleNotCorrectIntParam(storage, QueueSystem.RUN_PARAM_NAMES.get(Input.STORAGE_CAPACITY_KEY));
-        handleNotCorrectIntParam(interval, QueueSystem.RUN_PARAM_NAMES.get(Input.INTERVAL_KEY));
-        handleNotCorrectIntParam(process, QueueSystem.RUN_PARAM_NAMES.get(Input.PROCESS_TIME_KEY));
+        handleNotCorrectIntParam(jobs, QueueSystem.RUN_PARAM_NAMES.get(InputData.NUMBER_OF_JOBS_KEY));
+        handleNotCorrectIntParam(workers, QueueSystem.RUN_PARAM_NAMES.get(InputData.NUMBER_OF_WORKERS_KEY));
+        handleNotCorrectIntParam(storage, QueueSystem.RUN_PARAM_NAMES.get(InputData.STORAGE_CAPACITY_KEY));
+        handleNotCorrectIntParam(interval, QueueSystem.RUN_PARAM_NAMES.get(InputData.INTERVAL_KEY));
+        handleNotCorrectIntParam(process, QueueSystem.RUN_PARAM_NAMES.get(InputData.PROCESS_TIME_KEY));
     }
 }

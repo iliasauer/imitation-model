@@ -7,6 +7,7 @@ import ru.ifmo.kot.queue.system.engine.Engine;
 import ru.ifmo.kot.queue.system.engine.Worker;
 import ru.ifmo.kot.queue.system.job.Job;
 import ru.ifmo.kot.queue.system.storage.Discipline;
+import ru.ifmo.kot.queue.util.chart.Chart;
 import ru.ifmo.kot.queue.util.random.RandomGenerator;
 
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import static ru.ifmo.kot.queue.util.random.ComplexRandom.exponentialDistributionDensityAtPoint;
+
 public class QueueSystem {
 
     private static final FastDateFormat TIME_FORMAT = FastDateFormat.getInstance("HH:mm:ss.SSS",
@@ -28,21 +31,22 @@ public class QueueSystem {
     public static final Map<String, String> RUN_PARAM_NAMES = new HashMap<>();
     public static final Map<String, String> OUTPUT_PARAM_NAMES = new HashMap<>();
     public static final Map<String, List<Map<String, String>>> IO_MAP = new HashMap<>();
+    public static final List<Chart> CHART_LIST = new ArrayList<>(4);
 
     static {
-        RUN_PARAM_NAMES.put(Input.NUMBER_OF_JOBS_KEY, "number of jobs");
-        RUN_PARAM_NAMES.put(Input.NUMBER_OF_WORKERS_KEY, "number of workers");
-        RUN_PARAM_NAMES.put(Input.STORAGE_CAPACITY_KEY, "capacity of storage");
-        RUN_PARAM_NAMES.put(Input.SERVICE_DISCIPLINE_KEY, "service discipline");
-        RUN_PARAM_NAMES.put(Input.INTERVAL_KEY, "average job entry interval");
-        RUN_PARAM_NAMES.put(Input.PROCESS_TIME_KEY, "average job processing time");
-        OUTPUT_PARAM_NAMES.put(Output.SYSTEM_USE_FACTOR_KEY, "system use factor");
-        OUTPUT_PARAM_NAMES.put(Output.AVG_JOB_QUEUE_TIME_KEY, "average job queue waiting time");
-        OUTPUT_PARAM_NAMES.put(Output.AVG_JOB_SYSTEM_TIME_KEY, "average job system standing time");
-        OUTPUT_PARAM_NAMES.put(Output.AVG_JOB_QUEUE_NUMBER_KEY, "average job queue number over time");
-        OUTPUT_PARAM_NAMES.put(Output.AVG_JOB_SYSTEM_NUMBER_KEY, "average job system number over time");
-        OUTPUT_PARAM_NAMES.put(Output.ABSOLUTE_SYSTEM_THROUGHPUT_KEY, "absolute system throughput");
-        OUTPUT_PARAM_NAMES.put(Output.RELATIVE_SYSTEM_THROUGHPUT_KEY, "relative system throughput");
+        RUN_PARAM_NAMES.put(InputData.NUMBER_OF_JOBS_KEY, "number of jobs");
+        RUN_PARAM_NAMES.put(InputData.NUMBER_OF_WORKERS_KEY, "number of workers");
+        RUN_PARAM_NAMES.put(InputData.STORAGE_CAPACITY_KEY, "capacity of storage");
+        RUN_PARAM_NAMES.put(InputData.SERVICE_DISCIPLINE_KEY, "service discipline");
+        RUN_PARAM_NAMES.put(InputData.INTERVAL_KEY, "average job entry interval");
+        RUN_PARAM_NAMES.put(InputData.PROCESS_TIME_KEY, "average job processing time");
+        OUTPUT_PARAM_NAMES.put(OutputData.SYSTEM_USE_FACTOR_KEY, "system use factor");
+        OUTPUT_PARAM_NAMES.put(OutputData.AVG_JOB_QUEUE_TIME_KEY, "average job queue waiting time");
+        OUTPUT_PARAM_NAMES.put(OutputData.AVG_JOB_SYSTEM_TIME_KEY, "average job system standing time");
+        OUTPUT_PARAM_NAMES.put(OutputData.AVG_JOB_QUEUE_NUMBER_KEY, "average job queue number over time");
+        OUTPUT_PARAM_NAMES.put(OutputData.AVG_JOB_SYSTEM_NUMBER_KEY, "average job system number over time");
+        OUTPUT_PARAM_NAMES.put(OutputData.ABSOLUTE_SYSTEM_THROUGHPUT_KEY, "absolute system throughput");
+        OUTPUT_PARAM_NAMES.put(OutputData.RELATIVE_SYSTEM_THROUGHPUT_KEY, "relative system throughput");
         IO_MAP.put(Statistics.INPUT_KEY, new ArrayList<Map<String, String>>());
         IO_MAP.put(Statistics.OUTPUT_KEY, new ArrayList<Map<String, String>>());
     }
@@ -73,6 +77,8 @@ public class QueueSystem {
                 intervalSeed, avgInterval);
         RandomGenerator processGenerator = getRandomGenerator(generatorBuilder,
                 processSeed, avgProcessTime);
+        List<Integer> intervalGeneratorValues = new ArrayList<>();
+        List<Integer> processGeneratorValues = new ArrayList<>();
         saveInputParams(numberOfJobs, numberOfWorkers, capacityOfStorage,
                 discipline, avgInterval, avgProcessTime);
         int counter = 0;
@@ -80,11 +86,13 @@ public class QueueSystem {
         final List<Future<?>> futures = new ArrayList<>();
         setStartRunTime();
         while (counter < numberOfJobs) {
-            final Job nextJob = new Job(generateJobComplexity(processGenerator));
+            final Job nextJob =
+                    new Job(generateJobComplexity(processGenerator, processGeneratorValues));
             final Future<?> jobFuture = engine.submit(nextJob);
             futures.add(jobFuture);
             try {
-                TimeUnit.MILLISECONDS.sleep(generateJobEntryInterval(intervalGenerator));
+                TimeUnit.MILLISECONDS.sleep(
+                        generateJobEntryInterval(intervalGenerator, intervalGeneratorValues));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -95,6 +103,7 @@ public class QueueSystem {
         setTotalRunTime();
         setSuccessfullyCompletedJobs();
         LOGGER.info("The total run time: " + totalRunTimeString());
+        saveCharts(intervalGeneratorValues, processGeneratorValues);
     }
 
     private static void setSeed(final int intervalSeed, final int processSeed) {
@@ -127,34 +136,58 @@ public class QueueSystem {
         QueueSystem.avgInterval = avgInterval;
         QueueSystem.avgProcessTime = avgProcessTime;
         final Map<String, String> inputMap = new HashMap<>();
-        inputMap.put(Input.NUMBER_OF_JOBS_KEY, String.valueOf(numberOfJobs));
-        inputMap.put(Input.NUMBER_OF_WORKERS_KEY, String.valueOf(numberOfWorkers));
-        inputMap.put(Input.STORAGE_CAPACITY_KEY, String.valueOf(capacityOfStorage));
-        inputMap.put(Input.SERVICE_DISCIPLINE_KEY, discipline.name());
-        inputMap.put(Input.INTERVAL_KEY, String.valueOf(avgInterval));
-        inputMap.put(Input.PROCESS_TIME_KEY, String.valueOf(avgProcessTime));
+        inputMap.put(InputData.NUMBER_OF_JOBS_KEY, String.valueOf(numberOfJobs));
+        inputMap.put(InputData.NUMBER_OF_WORKERS_KEY, String.valueOf(numberOfWorkers));
+        inputMap.put(InputData.STORAGE_CAPACITY_KEY, String.valueOf(capacityOfStorage));
+        inputMap.put(InputData.SERVICE_DISCIPLINE_KEY, discipline.name());
+        inputMap.put(InputData.INTERVAL_KEY, String.valueOf(avgInterval));
+        inputMap.put(InputData.PROCESS_TIME_KEY, String.valueOf(avgProcessTime));
         IO_MAP.get(Statistics.INPUT_KEY).add(inputMap);
     }
 
     private static void saveOutputParams() {
         final Map<String, String> outputMap = new HashMap<>();
-        outputMap.put(Output.SYSTEM_USE_FACTOR_KEY, String.valueOf(QueueSystem.systemUseFactor));
-        outputMap.put(Output.AVG_JOB_QUEUE_TIME_KEY, String.valueOf(QueueSystem.avgJobQueueTime));
-        outputMap.put(Output.AVG_JOB_SYSTEM_TIME_KEY, String.valueOf(QueueSystem.avgJobSystemTime));
-        outputMap.put(Output.AVG_JOB_QUEUE_NUMBER_KEY, String.valueOf(QueueSystem.avgJobQueueNumber));
-        outputMap.put(Output.AVG_JOB_SYSTEM_NUMBER_KEY, String.valueOf(QueueSystem.avgJobSystemNumber));
-        outputMap.put(Output.ABSOLUTE_SYSTEM_THROUGHPUT_KEY, String.valueOf(QueueSystem.absoluteThroughput));
-        outputMap.put(Output.RELATIVE_SYSTEM_THROUGHPUT_KEY, String.valueOf(QueueSystem.relativeThroughput));
+        outputMap.put(OutputData.SYSTEM_USE_FACTOR_KEY, String.valueOf(QueueSystem.systemUseFactor));
+        outputMap.put(OutputData.AVG_JOB_QUEUE_TIME_KEY, String.valueOf(QueueSystem.avgJobQueueTime));
+        outputMap.put(OutputData.AVG_JOB_SYSTEM_TIME_KEY, String.valueOf(QueueSystem.avgJobSystemTime));
+        outputMap.put(OutputData.AVG_JOB_QUEUE_NUMBER_KEY, String.valueOf(QueueSystem.avgJobQueueNumber));
+        outputMap.put(OutputData.AVG_JOB_SYSTEM_NUMBER_KEY, String.valueOf(QueueSystem.avgJobSystemNumber));
+        outputMap.put(OutputData.ABSOLUTE_SYSTEM_THROUGHPUT_KEY, String.valueOf(QueueSystem.absoluteThroughput));
+        outputMap.put(OutputData.RELATIVE_SYSTEM_THROUGHPUT_KEY, String.valueOf(QueueSystem.relativeThroughput));
         IO_MAP.get(Statistics.OUTPUT_KEY).add(outputMap);
     }
 
-    private static int generateJobComplexity(final RandomGenerator generator) {
+    private static void saveCharts(List<Integer> intervalGeneratorValues,
+                                   List<Integer> processGeneratorValues) {
+        CHART_LIST.add(new Chart(OutputCharts.INTERVAL_VALUES_CHART_NAME,
+                new ArrayList<Object>(intervalGeneratorValues)));
+        CHART_LIST.add(new Chart(OutputCharts.PROCESS_VALUES_CHART_NAME,
+                new ArrayList<Object>(processGeneratorValues)));
+        List<Double> intervalValuesDensity = new ArrayList<>();
+        List<Double> processValuesDensity = new ArrayList<>();
+        for (Integer value: intervalGeneratorValues) {
+            intervalValuesDensity.add(exponentialDistributionDensityAtPoint(value, avgInterval));
+        }
+        for (Integer value: processGeneratorValues) {
+            processValuesDensity.add(exponentialDistributionDensityAtPoint(value, avgProcessTime));
+        }
+        CHART_LIST.add(new Chart(OutputCharts.INTERVAL_VALUES_DENSITY_CHART_NAME,
+                new ArrayList<Object>(intervalValuesDensity)));
+        CHART_LIST.add(new Chart(OutputCharts.PROCESS_VALUES_DENSITY_CHART_NAME,
+                new ArrayList<Object>(processValuesDensity)));
+    }
+
+    private static int generateJobComplexity(final RandomGenerator generator,
+                                             final List<Integer> valuesList) {
         processSeed = generator.nextInt();
+        valuesList.add(processSeed);
         return processSeed;
     }
 
-    private static long generateJobEntryInterval(final RandomGenerator generator) {
+    private static long generateJobEntryInterval(final RandomGenerator generator,
+                                                 final List<Integer> valuesList) {
         intervalSeed = generator.nextInt();
+        valuesList.add(processSeed);
         return intervalSeed;
     }
 

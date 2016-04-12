@@ -39,6 +39,13 @@ define(['jquery'],
         
         const PRERUN_CHART = initPrerunChart();
 
+        const POSTRUN_CHART = {
+            'intervalValues': 'job entry interval distribution',
+            'processValues': 'job processing time distribution',
+            'intervalDensity': 'job entry interval distribution density',
+            'processDensity': 'job processing time distribution density'
+        };
+
         const OUTPUT = {
             'systemUseFactor': 'system use factor',
             'avgJobQueueTime': 'average job queue waiting time',
@@ -69,6 +76,10 @@ define(['jquery'],
             return PRERUN_CHART;
         }
 
+        function postrunCharts() {
+            return POSTRUN_CHART;
+        }
+
         function outputs() {
             return OUTPUT;
         }
@@ -93,6 +104,7 @@ define(['jquery'],
             selectFields: selectFields,
             prerunPointCharts: prerunPointCharts,
             prerunCharts: prerunCharts,
+            postrunCharts: postrunCharts,
             outputs: outputs,
             plainId: composeId,
             jqId: composeJqueryId,

@@ -1,13 +1,5 @@
 define([
-    "jquery",
-    "handlebars",
-    "Chart",
-    "Scatter",
-    "text!../../templates/app.hbs",
-    "text!../../templates/outputArea.hbs",
-    "text!../../templates/chartWindow.hbs",
-    "../util/handlebarsUtil",
-    "../util/templateUtil"
+    "jquery"
 ], function ($) {
 
     const webSocketUrl = "ws://127.0.0.1:8080/logs";

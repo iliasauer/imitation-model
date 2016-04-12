@@ -233,6 +233,10 @@ public class ComplexRandom {
         return new double[]{mean - accuracy, mean + accuracy};
     }
 
+    public static double exponentialDistributionDensityAtPoint(double x, double mean) {
+        return (1 / mean) * Math.pow(Math.E, (-x / mean));
+    }
+
     @SuppressWarnings("unused")
     public static String sequenceToString(double[] sequence) {
         StringBuilder builder = new StringBuilder();

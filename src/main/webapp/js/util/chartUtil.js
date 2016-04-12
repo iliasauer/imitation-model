@@ -4,12 +4,14 @@ define([
         'Chart',
         'Scatter',
         'Chart2',
+        'Chart3',
         './templateUtil'],
     function ($,
               Handlebars,
               Chart,
               Scatter,
               Chart2,
+              Chart3,
               templateUtil) {
 
         function drawPointChart(id, label, values) {
@@ -30,9 +32,6 @@ define([
                     }]
                 }
             });
-        }
-
-        function drawLineChart() {
         }
 
         function drawBarChart(id, xLabels, barLabel, barValues, lineLabel, lineValues) {
@@ -74,6 +73,30 @@ define([
             });
         }
 
+        // function drawIndexLineChart(id, values) {
+        //     const ctx = document.getElementById(id).getContext("2d");
+        //     var labels = [];
+        //     for (var i = 0; i < values.length; i++) {
+        //         labels.push(i);
+        //     }
+        //     const chartData = [{
+        //         labels: labels,
+        //         datasets: [
+        //             {
+        //                 label: id,
+        //                 fillColor: "rgba(220,220,220,0.2)",
+        //                 strokeColor: "rgba(220,220,220,1)",
+        //                 pointColor: "rgba(220,220,220,1)",
+        //                 pointStrokeColor: "#fff",
+        //                 pointHighlightFill: "#fff",
+        //                 pointHighlightStroke: "rgba(220,220,220,1)",
+        //                 data: values
+        //             }
+        //         ]
+        //     }];
+        //     new Chart2(ctx).Line(chartData, {});
+        // }
+
         function drawPrerunPointCharts(chartArr) {
             $.each(templateUtil.prerunPointCharts(), function (objKey) {
                 const id = templateUtil.plainId([objKey, 'id']);
@@ -91,7 +114,7 @@ define([
 
         return {
             drawPointChart: drawPointChart,
-            drawLineChart: drawLineChart,
+            // drawIndexLineChart: drawIndexLineChart,
             drawBarChart: drawBarChart,
             drawPrerunPointCharts: drawPrerunPointCharts
         }
