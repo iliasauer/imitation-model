@@ -97,9 +97,7 @@ define(['jquery',
                             });
                             $(outputSelectId + "  option:last").prop('selected', true);
                             output(outputArr[outputArr.length - 1]);
-                            $.each(chartsArr, function (index, chartObj) {
-                                // chartUtil.drawIndexLineChart(plainId([chartObj.name,'id']), chartObj.values);
-                            });
+                            chartUtil.drawPostrunPointCharts(chartsArr);
                             $.each(templateUtil.postrunCharts(), function (objKey) {
                                 const buttonId = jqId([objKey, 'button', 'id']);
                                 cssUtil.enable(buttonId);
@@ -155,7 +153,6 @@ define(['jquery',
             renderChartWindow();
             bindEvents();
             drawPrerunCharts();
-            // pureChartUtil.drawIndexLineChart('test-canvas', [26, 35, 464, 789, 4156]);
             webSocketController.connectWs();
         }
         

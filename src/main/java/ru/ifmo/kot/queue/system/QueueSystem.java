@@ -8,6 +8,7 @@ import ru.ifmo.kot.queue.system.engine.Worker;
 import ru.ifmo.kot.queue.system.job.Job;
 import ru.ifmo.kot.queue.system.storage.Discipline;
 import ru.ifmo.kot.queue.util.chart.Chart;
+import ru.ifmo.kot.queue.util.chart.Charts;
 import ru.ifmo.kot.queue.util.random.RandomGenerator;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import static ru.ifmo.kot.queue.system.OutputCharts.*;
 import static ru.ifmo.kot.queue.util.random.ComplexRandom.exponentialDistributionDensityAtPoint;
 
 public class QueueSystem {
@@ -159,22 +161,22 @@ public class QueueSystem {
 
     private static void saveCharts(List<Integer> intervalGeneratorValues,
                                    List<Integer> processGeneratorValues) {
-        CHART_LIST.add(new Chart(OutputCharts.INTERVAL_VALUES_CHART_NAME,
-                new ArrayList<Object>(intervalGeneratorValues)));
-        CHART_LIST.add(new Chart(OutputCharts.PROCESS_VALUES_CHART_NAME,
-                new ArrayList<Object>(processGeneratorValues)));
+        CHART_LIST.add(Charts.indexIntegerChart(INTERVAL_VALUES_CHART_NAME,
+                intervalGeneratorValues));
+        CHART_LIST.add(Charts.indexIntegerChart(PROCESS_VALUES_CHART_NAME,
+                processGeneratorValues));
         List<Double> intervalValuesDensity = new ArrayList<>();
         List<Double> processValuesDensity = new ArrayList<>();
-        for (Integer value: intervalGeneratorValues) {
+        for (Integer value : intervalGeneratorValues) {
             intervalValuesDensity.add(exponentialDistributionDensityAtPoint(value, avgInterval));
         }
-        for (Integer value: processGeneratorValues) {
+        for (Integer value : processGeneratorValues) {
             processValuesDensity.add(exponentialDistributionDensityAtPoint(value, avgProcessTime));
         }
-        CHART_LIST.add(new Chart(OutputCharts.INTERVAL_VALUES_DENSITY_CHART_NAME,
-                new ArrayList<Object>(intervalValuesDensity)));
-        CHART_LIST.add(new Chart(OutputCharts.PROCESS_VALUES_DENSITY_CHART_NAME,
-                new ArrayList<Object>(processValuesDensity)));
+        CHART_LIST.add(Charts.indexDoubleChart(INTERVAL_VALUES_DENSITY_CHART_NAME,
+                intervalValuesDensity));
+        CHART_LIST.add(Charts.indexDoubleChart(PROCESS_VALUES_DENSITY_CHART_NAME,
+                processValuesDensity));
     }
 
     private static int generateJobComplexity(final RandomGenerator generator,

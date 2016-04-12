@@ -71,27 +71,25 @@ define([
             });
         }
 
-        // function drawIndexLineChart(id, values) {
-        //     const ctx = document.getElementById(id).getContext('2d');
-        //     var labels = [];
-        //     for (var i = 0; i < values.length; i++) {
-        //         labels.push(i);
-        //     }
-        //     const chartData = [{
-        //         labels: labels,
-        //         datasets: [
-        //             {
-        //                 label: id,
-        //                 fillColor: 'rgba(172,194,132,0.4)',
-        //                 strokeColor: "#ACC26D",
-        //                 pointColor: "#fff",
-        //                 pointStrokeColor: "#9DB86D",
-        //                 data: values
-        //             }
-        //         ]
-        //     }];
-        //     new Chart3(ctx).Line(chartData);
-        // }
+        function drawIndexLineChart(id, label, values) {
+            const ctx = document.getElementById(id).getContext("2d");
+            const chartData = [{
+                label: label,
+                data: values
+            }];
+            new ChartCore(ctx).Scatter(chartData, {
+                datasetStroke: true,
+                responsive: true,
+                hoverMode: 'single',
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            zeroLineColor: "rgba(0,0,0,1)"
+                        }
+                    }]
+                }
+            });
+        }
 
         function drawPrerunPointCharts(chartArr) {
             $.each(templateUtil.prerunPointCharts(), function (objKey) {
@@ -108,10 +106,26 @@ define([
             });
         }
 
+        function drawPostrunPointCharts(chartArr) {
+            $.each(templateUtil.postrunCharts(), function (objKey) {
+                const id = templateUtil.plainId([objKey, 'id']);
+                var name = '';
+                var values = [];
+                $.each(chartArr, function (arrIndex, arrValue) {
+                    if (arrValue.name == objKey) {
+                        name = arrValue.name;
+                        values = arrValue.values;
+                    }
+                });
+                drawIndexLineChart(id, name, values);
+            });
+        }
+
         return {
             drawPointChart: drawPointChart,
-            // drawIndexLineChart: drawIndexLineChart,
+            drawIndexLineChart: drawIndexLineChart,
             drawBarChart: drawBarChart,
-            drawPrerunPointCharts: drawPrerunPointCharts
+            drawPrerunPointCharts: drawPrerunPointCharts,
+            drawPostrunPointCharts: drawPostrunPointCharts
         }
     });

@@ -62,6 +62,22 @@ public class Charts {
         return new Chart(name, chart);
     }
 
+    public static Chart indexDoubleChart(String name, List<Double> values) {
+        List<Object> chart = new ArrayList<>();
+        for (int i = 0; i < values.size(); i++) {
+            chart.add(new Point(i, values.get(i)));
+        }
+        return new Chart(name, chart);
+    }
+
+    public static Chart indexIntegerChart(String name, List<Integer> values) {
+        List<Object> chart = new ArrayList<>();
+        for (int i = 0; i < values.size(); i++) {
+            chart.add(new Point(i, values.get(i)));
+        }
+        return new Chart(name, chart);
+    }
+
     private static Chart nextElementChart(String name, double[] sequence) {
         List<Object> chart = new ArrayList<>();
         for (int i = 0; i < sequence.length - 1; i++) {
