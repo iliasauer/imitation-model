@@ -1,14 +1,14 @@
 define([
         'jquery',
         'handlebars',
-        'ScatterChart',
-        'Scatter',
+        'ChartCore',
+        'ChartScatter',
         'ChartFork',
         './templateUtil'],
     function ($,
               Handlebars,
-              Chart,
-              ScatterChart,
+              ChartCore,
+              Scatter,
               ChartFork,
               templateUtil) {
 
@@ -18,7 +18,7 @@ define([
                 label: label,
                 data: values
             }];
-            new ScatterChart(ctx).Scatter(chartData, {
+            new ChartCore(ctx).Scatter(chartData, {
                 datasetStroke: false,
                 responsive: true,
                 hoverMode: 'single',
