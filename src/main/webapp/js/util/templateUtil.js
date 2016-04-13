@@ -43,7 +43,12 @@ define(['jquery'],
             'intervalFunction': 'job entry interval distribution',
             'processFunction': 'job processing time distribution',
             'intervalDensity': 'job entry interval distribution density',
-            'processDensity': 'job processing time distribution density'
+            'processDensity': 'job processing time distribution density',
+            'jobQueueNumbers': 'job queue numbers',
+            'jobSystemNumbers': 'job system numbers',
+            'avgJobQueueNumbers': 'average job queue numbers',
+            'avgJobSystemNumbers': 'average job system numberss',
+            'sysUseFactors': 'system factors'
         };
 
         const OUTPUT = {

@@ -86,12 +86,44 @@ public class QueueSystem {
                 processSeed, avgProcessTime);
         List<Integer> intervalGeneratorValues = new ArrayList<>();
         List<Integer> processGeneratorValues = new ArrayList<>();
+        final List<Object> jobQueueNumbers = new ArrayList<>();
+        final List<Object> jobSystemNumbers = new ArrayList<>();
+        final List<Object> avgJobQueueNumbers = new ArrayList<>();
+        final List<Object> avgJobSystemNumbers = new ArrayList<>();
+        final List<Object> systemUseFactors = new ArrayList<>();
         saveInputParams(numberOfJobs, numberOfWorkers, capacityOfStorage,
                 discipline, avgInterval, avgProcessTime);
         int counter = 0;
         LOGGER.debug("The system starts running.");
         final List<Future<?>> futures = new ArrayList<>();
         setStartRunTime();
+        Thread realTimeStatsThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    LOGGER.error("The internal system error");
+                }
+                while (true) {
+                    jobQueueNumbers.add(
+                            new Point(currentTimeFromStart(), StorageFactory.currentStorageSize()));
+                    jobSystemNumbers.add(
+                            new Point(currentTimeFromStart(), currentNumberOfJobs()));
+                    avgJobQueueNumbers.add(
+                            new Point(currentTimeFromStart(), currentAvgJobQueueNumber()));
+                    avgJobSystemNumbers.add(
+                            new Point(currentTimeFromStart(), currentAvgJobSystemNumber()));
+                    systemUseFactors.add(
+                            new Point(currentTimeFromStart(), currentSystemUseFactor()));
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        LOGGER.error("The internal system error");
+                    }
+                }
+            }
+        });
         while (counter < numberOfJobs) {
             final Job nextJob =
                     new Job(generateJobComplexity(processGenerator, processGeneratorValues));
@@ -111,7 +143,8 @@ public class QueueSystem {
         setTotalRunTime();
         setSuccessfullyCompletedJobs();
         LOGGER.info("The total run time: " + totalRunTimeString());
-        saveCharts(intervalGeneratorValues, processGeneratorValues);
+        saveCharts(intervalGeneratorValues, processGeneratorValues, jobQueueNumbers,
+                jobSystemNumbers, avgJobQueueNumbers, avgJobSystemNumbers, systemUseFactors);
     }
 
     private static void setSeed(final int intervalSeed, final int processSeed) {
@@ -173,8 +206,13 @@ public class QueueSystem {
         IO_MAP.get(Statistics.OUTPUT_KEY).add(outputMap);
     }
 
-    private static void saveCharts(List<Integer> intervalGeneratorValues,
-                                   List<Integer> processGeneratorValues) {
+    private static void saveCharts(final List<Integer> intervalGeneratorValues,
+                                   final List<Integer> processGeneratorValues,
+                                   final List<Object> jobQueueNumbers,
+                                   final List<Object> jobSystemNumbers,
+                                   final List<Object> avgJobQueueNumbers,
+                                   final List<Object> avgJobSystemNumbers,
+                                   final List<Object> systemUseFactors) {
         List<Double> minMaxIntervalList = ComplexRandom.fromMinToMaxList(intervalGeneratorValues);
         List<Double> minMaxProcessList = ComplexRandom.fromMinToMaxList(processGeneratorValues);
         List<Object> intervalValuesFunction = new ArrayList<>();
@@ -202,6 +240,11 @@ public class QueueSystem {
         CHART_LIST.add(new Chart(PROCESS_VALUES_FUNCTION_CHART_NAME, processValuesFunction));
         CHART_LIST.add(new Chart(INTERVAL_VALUES_DENSITY_CHART_NAME, intervalValuesDensity));
         CHART_LIST.add(new Chart(PROCESS_VALUES_DENSITY_CHART_NAME, processValuesDensity));
+        CHART_LIST.add(new Chart(JOB_QUEUE_NUMBERS_NAME, jobQueueNumbers));
+        CHART_LIST.add(new Chart(JOB_SYSTEM_NUMBERS_NAME, jobSystemNumbers));
+        CHART_LIST.add(new Chart(AVG_JOB_QUEUE_NUMBERS_NAME, avgJobQueueNumbers));
+        CHART_LIST.add(new Chart(AVG_JOB_SYSTEM_NUMBERS_NAME, avgJobSystemNumbers));
+        CHART_LIST.add(new Chart(SYSTEM_USE_FACTORS_NAME, systemUseFactors));
     }
 
     private static int generateJobComplexity(final RandomGenerator generator,
