@@ -47,7 +47,7 @@ define(['jquery'],
             'jobQueueNumbers': 'job queue numbers',
             'jobSystemNumbers': 'job system numbers',
             'avgJobQueueNumbers': 'average job queue numbers',
-            'avgJobSystemNumbers': 'average job system numberss',
+            'avgJobSystemNumbers': 'average job system numbers',
             'sysUseFactors': 'system factors'
         };
 

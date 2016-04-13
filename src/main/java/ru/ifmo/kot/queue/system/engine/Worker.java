@@ -5,11 +5,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Worker extends Thread {
 
     private static final Logger LOGGER = LogManager.getLogger(Worker.class);
-    public static final Map<String, Long> STATISTICS = new HashMap<>();
+    public static final Map<String, Long> STATISTICS = new ConcurrentHashMap<>();
 
     private long jobProcessTime = 0;
 

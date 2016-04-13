@@ -20,9 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static ru.ifmo.kot.queue.system.OutputCharts.*;
 import static ru.ifmo.kot.queue.util.random.ComplexRandom.exponentialDistributionDensityAtPoint;
@@ -97,17 +95,14 @@ public class QueueSystem {
         LOGGER.debug("The system starts running.");
         final List<Future<?>> futures = new ArrayList<>();
         setStartRunTime();
-        Thread realTimeStatsThread = new Thread(new Runnable() {
+        final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleAtFixedRate(new Runnable() {
+            @SuppressWarnings("InfiniteLoopStatement")
             @Override
             public void run() {
                 try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    LOGGER.error("The internal system error");
-                }
-                while (true) {
                     jobQueueNumbers.add(
-                            new Point(currentTimeFromStart(), StorageFactory.currentStorageSize()));
+                            new Point(currentTimeFromStart(), engine.getPoolSize()));
                     jobSystemNumbers.add(
                             new Point(currentTimeFromStart(), currentNumberOfJobs()));
                     avgJobQueueNumbers.add(
@@ -116,14 +111,9 @@ public class QueueSystem {
                             new Point(currentTimeFromStart(), currentAvgJobSystemNumber()));
                     systemUseFactors.add(
                             new Point(currentTimeFromStart(), currentSystemUseFactor()));
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        LOGGER.error("The internal system error");
-                    }
+                } catch (NullPointerException ignored) {
                 }
-            }
-        });
+            }}, 100, 25, TimeUnit.MILLISECONDS);
         while (counter < numberOfJobs) {
             final Job nextJob =
                     new Job(generateJobComplexity(processGenerator, processGeneratorValues));
@@ -167,8 +157,12 @@ public class QueueSystem {
         return builder.build();
     }
 
-    private static int currentNumberOfJobs() {
-        return currentNumberOfJobs;
+    private static long currentNumberOfJobs() {
+        return engine.getTaskCount();
+    }
+
+    private static long currentNumberOfQueueJobs() {
+        return engine.getTaskCount() - engine.getCompletedTaskCount();
     }
 
     private static long currentTimeFromStart() {
@@ -339,7 +333,7 @@ public class QueueSystem {
         for (Map<String, Long> jobTimes : Job.STATISTICS.values()) {
             jobQueueTimeSum += jobTimes.get(Job.IN_QUEUE_TIME);
         }
-        return ((double) jobQueueTimeSum) / StorageFactory.currentStorageSize();
+        return ((double) jobQueueTimeSum) / currentNumberOfQueueJobs();
     }
 
     private static void calculateAvgJobQueueTime() {

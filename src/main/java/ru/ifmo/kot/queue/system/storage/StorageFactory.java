@@ -4,11 +4,11 @@ import java.util.concurrent.BlockingQueue;
 
 public class StorageFactory {
 
-    private static BlockingQueue<Runnable> currentStorage;
+    public static BlockingQueue<Runnable> currentStorage;
 
-    public static int currentStorageSize() {
-        return currentStorage.size();
-    }
+//    public static int currentStorageSize() {
+//        return currentStorage.size();
+//    }
 
     public static Discipline getDiscipline(String disciplineName) {
         for (Discipline discipline: Discipline.values()) {

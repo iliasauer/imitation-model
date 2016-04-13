@@ -2,12 +2,11 @@ package ru.ifmo.kot.queue.system.job;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.SystemClock;
 import org.apache.logging.log4j.core.util.datetime.FastDateFormat;
 import ru.ifmo.kot.queue.system.engine.Worker;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class Job implements Runnable {
@@ -17,7 +16,7 @@ public class Job implements Runnable {
     private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("HH:mm:ss.SS");
     public static final String IN_QUEUE_TIME = "inQueueTime";
     public static final String IN_SYSTEM_TIME = "inSystemTime";
-    public static final Map<Long, Map<String, Long>> STATISTICS = new HashMap<>();
+    public static final Map<Long, Map<String, Long>> STATISTICS = new ConcurrentHashMap<>();
 
     private static long jobCounter = 1;
     private static long runsCounter = 1;
@@ -48,7 +47,7 @@ public class Job implements Runnable {
     private void open() {
         state = State.OPEN;
         printStateDescription(state);
-        STATISTICS.put(number, new HashMap<String, Long>());
+        STATISTICS.put(number, new ConcurrentHashMap<String, Long>());
         STATISTICS.get(number).put(IN_QUEUE_TIME, 0L); // by default
         setOpenJobTime();
     }
