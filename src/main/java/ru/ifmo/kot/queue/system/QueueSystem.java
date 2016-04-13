@@ -7,6 +7,7 @@ import ru.ifmo.kot.queue.system.engine.Engine;
 import ru.ifmo.kot.queue.system.engine.Worker;
 import ru.ifmo.kot.queue.system.job.Job;
 import ru.ifmo.kot.queue.system.storage.Discipline;
+import ru.ifmo.kot.queue.system.storage.StorageFactory;
 import ru.ifmo.kot.queue.util.chart.Chart;
 import ru.ifmo.kot.queue.util.chart.Charts;
 import ru.ifmo.kot.queue.util.chart.Point;
@@ -67,6 +68,7 @@ public class QueueSystem {
             avgJobQueueNumber, avgJobSystemNumber, absoluteThroughput, relativeThroughput;
     private static int intervalSeed = 0;
     private static int processSeed = 0;
+    private static int currentNumberOfJobs = 0;
     private static boolean isFirst = true;
 
     public static void run(int numberOfJobs, int numberOfWorkers,
@@ -101,6 +103,7 @@ public class QueueSystem {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            currentNumberOfJobs = counter;
             counter++;
         }
         awaitTasksCompletion(futures);
@@ -129,6 +132,14 @@ public class QueueSystem {
         builder.setSeed(seed);
         builder.setGoal(goal);
         return builder.build();
+    }
+
+    private static int currentNumberOfJobs() {
+        return currentNumberOfJobs;
+    }
+
+    private static long currentTimeFromStart() {
+        return System.currentTimeMillis() - startRunTime;
     }
 
     private static void saveInputParams(int numberOfJobs, int numberOfWorkers,
@@ -261,15 +272,31 @@ public class QueueSystem {
         Job.STATISTICS.clear();
     }
 
+    private static double currentSystemUseFactor() {
+        long workersUseTime = 0;
+        for (Long workerUseTime : Worker.STATISTICS.values()) {
+            workersUseTime += workerUseTime;
+        }
+        final double relativeWorkersUse = ((double) workersUseTime) / currentTimeFromStart();
+        return relativeWorkersUse / QueueSystem.numberOfWorkers;
+    }
+
     private static void calculateSystemUseFactor() {
         long workersUseTime = 0;
         for (Long workerUseTime : Worker.STATISTICS.values()) {
             workersUseTime += workerUseTime;
         }
-
         final double relativeWorkersUse = ((double) workersUseTime) / totalRunTime;
         QueueSystem.systemUseFactor =
                 relativeWorkersUse / QueueSystem.numberOfWorkers;
+    }
+
+    private static double currentAvgJobQueueTime() {
+        long jobQueueTimeSum = 0;
+        for (Map<String, Long> jobTimes : Job.STATISTICS.values()) {
+            jobQueueTimeSum += jobTimes.get(Job.IN_QUEUE_TIME);
+        }
+        return ((double) jobQueueTimeSum) / StorageFactory.currentStorageSize();
     }
 
     private static void calculateAvgJobQueueTime() {
@@ -281,6 +308,14 @@ public class QueueSystem {
                 ((double) jobQueueTimeSum) / QueueSystem.numberOfJobs;
     }
 
+    private static double currentAvgJobSystemTime() {
+        long jobSystemTimeSum = 0;
+        for (Map<String, Long> jobTimes : Job.STATISTICS.values()) {
+            jobSystemTimeSum += jobTimes.get(Job.IN_SYSTEM_TIME);
+        }
+        return ((double) jobSystemTimeSum) / currentNumberOfJobs();
+    }
+
     private static void calculateAvgJobSystemTime() {
         long jobSystemTimeSum = 0;
         for (Map<String, Long> jobTimes : Job.STATISTICS.values()) {
@@ -290,9 +325,17 @@ public class QueueSystem {
                 ((double) jobSystemTimeSum) / QueueSystem.numberOfJobs;
     }
 
+    private static double currentAvgJobQueueNumber() {
+        return currentAvgJobQueueTime() / QueueSystem.avgInterval;
+    }
+
     private static void calculateAvgJobQueueNumber() {
         QueueSystem.avgJobQueueNumber =
                 QueueSystem.avgJobQueueTime / QueueSystem.avgInterval;
+    }
+
+    private static double currentAvgJobSystemNumber() {
+        return currentAvgJobSystemTime() / QueueSystem.avgInterval;
     }
 
     private static void calculateAvgJobSystemNumber() {
