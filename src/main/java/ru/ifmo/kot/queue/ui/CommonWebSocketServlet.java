@@ -7,5 +7,6 @@ public class CommonWebSocketServlet extends WebSocketServlet {
     @Override
     public void configure(WebSocketServletFactory factory) {
         factory.register(CommonWebSocket.class);
+        factory.getPolicy().setIdleTimeout(100000000); //TODO check it
     }
 }

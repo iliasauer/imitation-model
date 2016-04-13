@@ -35,6 +35,8 @@ public class RandomGeneratorTest {
         }
         assertEquals(goal, ComplexRandom.mean(doubleSequence), goal * PERCENTAGE);
         assertEquals(goal, ComplexRandom.mean(intSequence), 0);
+        System.out.println(ComplexRandom.mean(ComplexRandom.rangeExponentialyDistributedRandomSequence
+                (RandomGenerator.SEED_1, 1, goal * 2 - 1)));
     }
 
 

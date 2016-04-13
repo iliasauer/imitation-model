@@ -9,6 +9,8 @@ import ru.ifmo.kot.queue.system.job.Job;
 import ru.ifmo.kot.queue.system.storage.Discipline;
 import ru.ifmo.kot.queue.util.chart.Chart;
 import ru.ifmo.kot.queue.util.chart.Charts;
+import ru.ifmo.kot.queue.util.chart.Point;
+import ru.ifmo.kot.queue.util.random.ComplexRandom;
 import ru.ifmo.kot.queue.util.random.RandomGenerator;
 
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import static ru.ifmo.kot.queue.system.OutputCharts.*;
 import static ru.ifmo.kot.queue.util.random.ComplexRandom.exponentialDistributionDensityAtPoint;
+import static ru.ifmo.kot.queue.util.random.ComplexRandom.exponentialDistributionFunctionAtPoint;
 
 public class QueueSystem {
 
@@ -161,22 +164,33 @@ public class QueueSystem {
 
     private static void saveCharts(List<Integer> intervalGeneratorValues,
                                    List<Integer> processGeneratorValues) {
-        CHART_LIST.add(Charts.indexIntegerChart(INTERVAL_VALUES_CHART_NAME,
-                intervalGeneratorValues));
-        CHART_LIST.add(Charts.indexIntegerChart(PROCESS_VALUES_CHART_NAME,
-                processGeneratorValues));
-        List<Double> intervalValuesDensity = new ArrayList<>();
-        List<Double> processValuesDensity = new ArrayList<>();
-        for (Integer value : intervalGeneratorValues) {
-            intervalValuesDensity.add(exponentialDistributionDensityAtPoint(value, avgInterval));
+        List<Double> minMaxIntervalList = ComplexRandom.fromMinToMaxList(intervalGeneratorValues);
+        List<Double> minMaxProcessList = ComplexRandom.fromMinToMaxList(processGeneratorValues);
+        List<Object> intervalValuesFunction = new ArrayList<>();
+        List<Object> processValuesFunction = new ArrayList<>();
+        List<Object> intervalValuesDensity = new ArrayList<>();
+        List<Object> processValuesDensity = new ArrayList<>();
+        for (Double value : minMaxIntervalList) {
+            intervalValuesFunction.add(new Point(
+                    value, exponentialDistributionFunctionAtPoint(value, avgInterval)));
         }
-        for (Integer value : processGeneratorValues) {
-            processValuesDensity.add(exponentialDistributionDensityAtPoint(value, avgProcessTime));
+        for (Double value : minMaxProcessList) {
+            processValuesFunction.add(
+                    new Point(value, exponentialDistributionFunctionAtPoint(value,
+                            avgProcessTime)));
         }
-        CHART_LIST.add(Charts.indexDoubleChart(INTERVAL_VALUES_DENSITY_CHART_NAME,
-                intervalValuesDensity));
-        CHART_LIST.add(Charts.indexDoubleChart(PROCESS_VALUES_DENSITY_CHART_NAME,
-                processValuesDensity));
+        for (Double value : minMaxIntervalList) {
+            intervalValuesDensity.add(
+                    new Point(value, exponentialDistributionDensityAtPoint(value, avgInterval)));
+        }
+        for (Double value : minMaxProcessList) {
+            processValuesDensity.add(
+                    new Point(value,exponentialDistributionDensityAtPoint(value, avgProcessTime)));
+        }
+        CHART_LIST.add(new Chart(INTERVAL_VALUES_FUNCTION_CHART_NAME, intervalValuesFunction));
+        CHART_LIST.add(new Chart(PROCESS_VALUES_FUNCTION_CHART_NAME, processValuesFunction));
+        CHART_LIST.add(new Chart(INTERVAL_VALUES_DENSITY_CHART_NAME, intervalValuesDensity));
+        CHART_LIST.add(new Chart(PROCESS_VALUES_DENSITY_CHART_NAME, processValuesDensity));
     }
 
     private static int generateJobComplexity(final RandomGenerator generator,

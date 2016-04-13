@@ -40,8 +40,8 @@ define(['jquery'],
         const PRERUN_CHART = initPrerunChart();
 
         const POSTRUN_CHART = {
-            'intervalValues': 'job entry interval distribution',
-            'processValues': 'job processing time distribution',
+            'intervalFunction': 'job entry interval distribution',
+            'processFunction': 'job processing time distribution',
             'intervalDensity': 'job entry interval distribution density',
             'processDensity': 'job processing time distribution density'
         };

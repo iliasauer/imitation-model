@@ -1,6 +1,9 @@
 package ru.ifmo.kot.queue.util.random;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
@@ -136,8 +139,8 @@ public class ComplexRandom {
         return sequence;
     }
 
-    public static double[] rangeExponentialyDistributedRandomSequence(final int
-                                                                                      minValue, final int maxValue) {
+    public static double[] rangeExponentialyDistributedRandomSequence(
+            final int minValue, final int maxValue) {
         return rangeExponentialyDistributedRandomSequence(SEED_1, minValue, maxValue);
     }
 
@@ -235,6 +238,44 @@ public class ComplexRandom {
 
     public static double exponentialDistributionDensityAtPoint(double x, double mean) {
         return (1 / mean) * Math.pow(Math.E, (-x / mean));
+    }
+
+    public static double exponentialDistributionFunctionAtPoint(double x, double mean) {
+        return 1 - Math.pow(Math.E, (-x / mean));
+    }
+
+    private static int min(List<Integer> values) {
+        int min = values.get(0);
+        for (Integer value: values) {
+            if (value < min) {
+                min = value;
+            }
+        }
+        return min;
+    }
+
+    private static int max(List<Integer> values) {
+        int max = values.get(0);
+        for (Integer value: values) {
+            if (value > max) {
+                max = value;
+            }
+        }
+        return max;
+    }
+
+    public static List<Double> fromMinToMaxList(List<Integer> values) {
+        final int n = values.size();
+        final double step = 1.0 / n;
+        final int min = min(values);
+        final int max = max(values);
+        List<Double> minMaxList = new ArrayList<>();
+        double currentValue = min;
+        while (currentValue <= max){
+            minMaxList.add(currentValue);
+            currentValue += step;
+        }
+        return minMaxList;
     }
 
     @SuppressWarnings("unused")
