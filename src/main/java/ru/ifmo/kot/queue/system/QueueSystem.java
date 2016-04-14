@@ -101,14 +101,18 @@ public class QueueSystem {
             @Override
             public void run() {
                 try {
+                    final long curNumOfQJobs = currentNumberOfQueueJobs();
                     jobQueueNumbers.add(
-                            new Point(currentTimeFromStart(), engine.getPoolSize()));
+                            new Point(currentTimeFromStart(), curNumOfQJobs));
+                    final long curNumOfSysJobs = currentNumberOfJobs();
                     jobSystemNumbers.add(
-                            new Point(currentTimeFromStart(), currentNumberOfJobs()));
+                            new Point(currentTimeFromStart(), curNumOfSysJobs));
                     avgJobQueueNumbers.add(
-                            new Point(currentTimeFromStart(), currentAvgJobQueueNumber()));
+                            new Point(currentTimeFromStart(),
+                                    ((double) curNumOfQJobs) / QueueSystem.avgInterval));
                     avgJobSystemNumbers.add(
-                            new Point(currentTimeFromStart(), currentAvgJobSystemNumber()));
+                            new Point(currentTimeFromStart(),
+                                    ((double) curNumOfSysJobs) / QueueSystem.avgInterval));
                     systemUseFactors.add(
                             new Point(currentTimeFromStart(), currentSystemUseFactor()));
                 } catch (NullPointerException ignored) {
@@ -362,18 +366,18 @@ public class QueueSystem {
                 ((double) jobSystemTimeSum) / QueueSystem.numberOfJobs;
     }
 
-    private static double currentAvgJobQueueNumber() {
-        return currentAvgJobQueueTime() / QueueSystem.avgInterval;
-    }
+//    private static double currentAvgJobQueueNumber() {
+//        return currentAvgJobQueueTime() / QueueSystem.avgInterval;
+//    }
 
     private static void calculateAvgJobQueueNumber() {
         QueueSystem.avgJobQueueNumber =
                 QueueSystem.avgJobQueueTime / QueueSystem.avgInterval;
     }
 
-    private static double currentAvgJobSystemNumber() {
-        return currentAvgJobSystemTime() / QueueSystem.avgInterval;
-    }
+//    private static double currentAvgJobSystemNumber() {
+//        return currentAvgJobSystemTime() / QueueSystem.avgInterval;
+//    }
 
     private static void calculateAvgJobSystemNumber() {
         QueueSystem.avgJobSystemNumber =

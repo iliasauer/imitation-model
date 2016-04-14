@@ -26,7 +26,7 @@
             <AppenderRef ref="Console"/>
             <AppenderRef ref="RollingFile"/>
         </logger>
-        <logger name="ru.ifmo.kot.queue.system.QueueSystem" level="INFO" additivity="false">
+        <logger name="ru.ifmo.kot.queue.system.QueueSystem" level="DEBUG" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="RollingFile"/>
         </logger>

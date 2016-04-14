@@ -20,6 +20,7 @@ public class Worker extends Thread {
 
     public void increaseTime(final long time) {
         jobProcessTime += time;
+        STATISTICS.put(this.getName(), jobProcessTime);
     }
 
     @Override
