@@ -48,6 +48,29 @@ define(['jquery',
                     {prerunCharts: templateUtil.prerunCharts(),
                      postrunCharts: templateUtil.postrunCharts()});
             }
+            
+            function addPostrunChartsElems() {
+                const postrunChartsElem = $(jqId(['postrunCharts']));
+                $.each(templateUtil.postrunCharts(), function (key) {
+                    postrunChartsElem.append($('<canvas/>', {
+                        id: plainId([key, 'id']),
+                        class: 'chart-canvas',
+                        width: 400,
+                        height: 400
+                    }));
+                    const buttonId = jqId([key, 'button', 'id']);
+                    cssUtil.enable(buttonId);
+                })    
+            }
+            
+            function removePostrunChartsElems() {
+                const postrunChartsElem = $(jqId(['postrunCharts']));
+                postrunChartsElem.empty();
+                $.each(templateUtil.postrunCharts(), function (key) {
+                    const buttonId = jqId([key, 'button', 'id']);
+                    cssUtil.disable(buttonId);    
+                })
+            }
 
             function bindEvents() {
 
@@ -78,6 +101,7 @@ define(['jquery',
                     fillParagraphsWithFields(templateUtil.inputFields(), templateUtil.fieldTypes().INPUT);
                     fillParagraphsWithFields(templateUtil.selectFields(), templateUtil.fieldTypes().SELECT);
                     $(runButtonSignId).text('Wait...');
+                    removePostrunChartsElems();
                     $.post('/run', $(formId).serialize())
                         .done(function (ioObj) {
                             const status = ioObj['status'];
@@ -97,18 +121,8 @@ define(['jquery',
                             });
                             $(outputSelectId + "  option:last").prop('selected', true);
                             output(outputArr[outputArr.length - 1]);
+                            addPostrunChartsElems();
                             chartUtil.drawPostrunPointCharts(chartsArr);
-                            $.each(templateUtil.postrunCharts(), function (objKey) {
-                                const buttonId = jqId([objKey, 'button', 'id']);
-                                cssUtil.enable(buttonId);
-                            });
-                            $.each(templateUtil.postrunCharts(), function (objKey) {
-                                const buttonId = jqId([objKey, 'button', 'id']);
-                                const chartId = jqId([objKey, 'id']);
-                                $(buttonId).click(function () {
-                                    $(chartId).toggle('slow');
-                                });
-                            });
                         });
                     $(formId).trigger('reset');
                     $(jqId(['log'])).val('');

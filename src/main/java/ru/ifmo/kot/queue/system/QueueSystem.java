@@ -95,6 +95,8 @@ public class QueueSystem {
         LOGGER.debug("The system starts running.");
         final List<Future<?>> futures = new ArrayList<>();
         setStartRunTime();
+        Worker.resetStatistics();
+        Job.resetStatistics();
         final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
         executor.scheduleAtFixedRate(new Runnable() {
             @SuppressWarnings("InfiniteLoopStatement")
