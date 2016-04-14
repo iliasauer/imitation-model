@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Worker extends Thread {
 
     private static final Logger LOGGER = LogManager.getLogger(Worker.class);
-    public static final Map<String, Long> STATISTICS = new ConcurrentHashMap<>();
+    public static Map<String, Long> STATISTICS = new ConcurrentHashMap<>();
 
     private long jobProcessTime = 0;
 
@@ -34,5 +34,9 @@ public class Worker extends Thread {
         LOGGER.debug(this.getName() + " stops." );
         STATISTICS.put(this.getName(), jobProcessTime);
         super.interrupt();
+    }
+
+    public static void resetStatistics() {
+        STATISTICS = new ConcurrentHashMap<>();
     }
 }

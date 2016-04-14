@@ -102,6 +102,13 @@ define(['jquery',
                                 const buttonId = jqId([objKey, 'button', 'id']);
                                 cssUtil.enable(buttonId);
                             });
+                            $.each(templateUtil.postrunCharts(), function (objKey) {
+                                const buttonId = jqId([objKey, 'button', 'id']);
+                                const chartId = jqId([objKey, 'id']);
+                                $(buttonId).click(function () {
+                                    $(chartId).toggle('slow');
+                                });
+                            });
                         });
                     $(formId).trigger('reset');
                     $(jqId(['log'])).val('');

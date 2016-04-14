@@ -16,7 +16,7 @@ public class Job implements Runnable {
     private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("HH:mm:ss.SS");
     public static final String IN_QUEUE_TIME = "inQueueTime";
     public static final String IN_SYSTEM_TIME = "inSystemTime";
-    public static final Map<Long, Map<String, Long>> STATISTICS = new ConcurrentHashMap<>();
+    public static Map<Long, Map<String, Long>> STATISTICS = new ConcurrentHashMap<>();
 
     private static long jobCounter = 1;
     private static long runsCounter = 1;
@@ -32,6 +32,10 @@ public class Job implements Runnable {
 
     private static void resetLogger() {
         LOCAL_LOGGER.setLength(0);
+    }
+
+    public static void resetStatistics() {
+        STATISTICS = new ConcurrentHashMap<>();
     }
 
     public static String getLog() {

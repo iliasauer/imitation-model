@@ -116,6 +116,8 @@ public class QueueSystem {
                     systemUseFactors.add(
                             new Point(currentTimeFromStart(), currentSystemUseFactor()));
                 } catch (NullPointerException ignored) {
+                    // Exception because of in time concurrent access for statistics maps
+                    // Just skip ones of many points
                 }
             }}, 100, 25, TimeUnit.MILLISECONDS);
         while (counter < numberOfJobs) {
