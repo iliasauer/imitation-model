@@ -2,8 +2,13 @@
 
 ## Build
 
-It needs to execute commands 'clean' and  'jar' with gradle. For example:
+It needs to execute commands 'clean' and  'jar' with gradle (http://gradle.org/). But there is the special gradle wrapper among project files, so you can execute next commands:
+
+### Linux/OSX
 $ ./gradlew clean jar
+
+### Windows
+$ gradlew clean jar
  
 Then the built project will be situated on the path %project_dir%/build/libs. Where %project_dir% is the name of the project directory.
 
