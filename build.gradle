@@ -1,21 +1,10 @@
 apply plugin: 'java'
 
-version = '0.1-SNAPSHOT'
+version = '0.9-beta'
 description = 'queue-system'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
-
-task dist(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'Gradle Jar File Example',
-                'Implementation-Version': version,
-                'Main-Class': 'ru.ifmo.kot.queue.ui.UiRunner'
-    }
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}
 
 repositories {
     mavenCentral()
@@ -23,8 +12,6 @@ repositories {
 
 dependencies {
     compile 'org.apache.logging.log4j:log4j-core:2.5'
-    compile 'org.apache.logging.log4j:log4j-api:2.5'
-    compile 'org.apache.logging.log4j:log4j-web:2.5'
 
     compile 'org.eclipse.jetty:jetty-server:9.3.8.v20160314'
     compile 'org.eclipse.jetty:jetty-webapp:9.3.8.v20160314'
@@ -46,4 +33,11 @@ dependencies {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.12'
+}
+
+jar {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    manifest {
+        attributes 'Main-Class': 'ru.ifmo.kot.queue.ModeDispatcher'
+    }
 }

@@ -140,6 +140,7 @@ public class QueueSystem {
         setFinishRunTime();
         setTotalRunTime();
         setSuccessfullyCompletedJobs();
+        executor.shutdown();
         LOGGER.info("The total run time: " + totalRunTimeString());
         saveCharts(intervalGeneratorValues, processGeneratorValues, jobQueueNumbers,
                 jobSystemNumbers, avgJobQueueNumbers, avgJobSystemNumbers, systemUseFactors);

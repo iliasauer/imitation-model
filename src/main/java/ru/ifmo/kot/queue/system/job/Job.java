@@ -35,7 +35,7 @@ public class Job implements Runnable {
     }
 
     public static void resetStatistics() {
-        STATISTICS = new ConcurrentHashMap<>();
+        STATISTICS.clear();
     }
 
     public static String getLog() {

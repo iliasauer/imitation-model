@@ -33,7 +33,7 @@ public class ModeDispatcher {
                 try {
                     CliRunner.start(args);
                 } catch (IllegalArgumentException e) {
-                    logAndExit("Failed to parse arguments", e);
+                    logAndExit("Failed to parse arguments");
                 }
                 break;
             default:

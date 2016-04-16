@@ -37,6 +37,6 @@ public class Worker extends Thread {
     }
 
     public static void resetStatistics() {
-        STATISTICS = new ConcurrentHashMap<>();
+        STATISTICS.clear();
     }
 }

@@ -132,7 +132,7 @@ public class UiRunner implements Runnable {
             server.start();
             LOGGER.debug("The UI server started.");
         } catch (Exception e) {
-            LOGGER.debug("The UI server cannot started.", e);
+            LOGGER.info("The UI server cannot started.", e);
         }
     }
 
