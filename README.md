@@ -15,7 +15,7 @@ The program can work in two modes. There are 'Command Line' mode and 'UI' mode.
 
 To run the built project, execute:
 
-$ java -jar %name_of_built_project%.jar [parameters splited by the space]
+$ java -jar %the_name_of_the_built_project%.jar [parameters splited by the space]
 
 Parameters should be specified in this order:
 1. The number of jobs
