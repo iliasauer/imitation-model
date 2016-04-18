@@ -81,10 +81,6 @@ public class CliRunner implements Runnable {
             seed = 0;
         }
         if (!hasBeenStarted) {
-            LOGGER.info(getStartInfo(jobs, workers,
-                    storage, discipline,
-                    interval, process,
-                    runs, seed));
             new CliRunner(jobs, workers,
                     storage, discipline,
                     interval, process,
@@ -149,6 +145,10 @@ public class CliRunner implements Runnable {
 
     @Override
     public void run() {
+        LOGGER.info(getStartInfo(jobs, workers,
+                storage, discipline,
+                interval, process,
+                runs, seed));
         for (int i = 0; i < runs; i++) {
             runCounter++;
             LOGGER.info("Run #" + runCounter);
