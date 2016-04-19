@@ -98,7 +98,7 @@ public class QueueSystem {
         setStartRunTime();
         Worker.resetStatistics();
         Job.resetStatistics();
-        STATISTICS_COLLECTING_INTERVAL = numberOfJobs / 4;
+        STATISTICS_COLLECTING_INTERVAL = Math.min(numberOfJobs / 5, 50);
         final double[] integralOfCurNumOfQJobs = {0};
         final double[] integralOfCurNumOfSysJobs = {0};
         final ScheduledExecutorService statisticsCollector = Executors.newScheduledThreadPool(1);
