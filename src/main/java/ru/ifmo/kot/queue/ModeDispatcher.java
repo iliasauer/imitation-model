@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.ifmo.kot.queue.ui.UiRunner;
 
+import java.net.UnknownHostException;
+
 public class ModeDispatcher {
 
     private static final int COMMAND_NOT_FOUND_CODE = 127;
@@ -20,7 +22,11 @@ public class ModeDispatcher {
             case 1:
             case 2:
                 if (args[0].equalsIgnoreCase(MODE.UI.name())) {
-                    UiRunner.start();
+                    try {
+                        UiRunner.start();
+                    } catch (UnknownHostException e) {
+                        logAndExit("The wrong host address.");
+                    }
                     LOGGER.info("The UI mode started");
                 } else {
                     logAndExit();

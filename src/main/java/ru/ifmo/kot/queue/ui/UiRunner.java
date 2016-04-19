@@ -7,6 +7,10 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+
 public class UiRunner implements Runnable {
 
     private static final int DEFAULT_PORT = 8080;
@@ -99,13 +103,15 @@ public class UiRunner implements Runnable {
 
     private Server server = null;
 
-    private UiRunner(int port) {
-        server = new Server(port);
+    private UiRunner(int port) throws UnknownHostException {
+        InetAddress address = InetAddress.getByName("127.0.0.1");
+        InetSocketAddress socketAddress = new InetSocketAddress(address, port);
+        server = new Server(socketAddress);
     }
 
 
     @SuppressWarnings("WeakerAccess") // for future
-    public static void start(int portNumber) {
+    public static void start(int portNumber) throws UnknownHostException {
         if (!hasBeenStarted) {
             new UiRunner(portNumber).run();
             hasBeenStarted = true;
@@ -114,7 +120,7 @@ public class UiRunner implements Runnable {
         }
     }
 
-    public static void start() {
+    public static void start() throws UnknownHostException {
         start(DEFAULT_PORT);
     }
 

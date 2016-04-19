@@ -31,6 +31,7 @@ public class QueueSystem {
     private static final FastDateFormat TIME_FORMAT = FastDateFormat.getInstance("HH:mm:ss.SSS",
             TimeZone.getTimeZone("GMT"), Locale.getDefault());
     private static final Logger LOGGER = LogManager.getLogger(QueueSystem.class);
+    private static int STATISTICS_COLLECTING_INTERVAL = 25;
 
     public static final Map<String, String> RUN_PARAM_NAMES = new HashMap<>();
     public static final Map<String, String> OUTPUT_PARAM_NAMES = new HashMap<>();
@@ -97,8 +98,11 @@ public class QueueSystem {
         setStartRunTime();
         Worker.resetStatistics();
         Job.resetStatistics();
-        final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(new Runnable() {
+        STATISTICS_COLLECTING_INTERVAL = numberOfJobs / 4;
+        final double[] integralOfCurNumOfQJobs = {0};
+        final double[] integralOfCurNumOfSysJobs = {0};
+        final ScheduledExecutorService statisticsCollector = Executors.newScheduledThreadPool(1);
+        statisticsCollector.scheduleAtFixedRate(new Runnable() {
             @SuppressWarnings("InfiniteLoopStatement")
             @Override
             public void run() {
@@ -109,19 +113,23 @@ public class QueueSystem {
                     final long curNumOfSysJobs = currentNumberOfJobs();
                     jobSystemNumbers.add(
                             new Point(currentTimeFromStart(), curNumOfSysJobs));
+                    integralOfCurNumOfQJobs[0] +=
+                            ((double) curNumOfQJobs) * STATISTICS_COLLECTING_INTERVAL;
                     avgJobQueueNumbers.add(
                             new Point(currentTimeFromStart(),
-                                    ((double) curNumOfQJobs) / QueueSystem.avgInterval));
+                                    integralOfCurNumOfQJobs[0] / currentTimeFromStart()));
+                    integralOfCurNumOfSysJobs[0] +=
+                            ((double) curNumOfSysJobs) * STATISTICS_COLLECTING_INTERVAL;
                     avgJobSystemNumbers.add(
                             new Point(currentTimeFromStart(),
-                                    ((double) curNumOfSysJobs) / QueueSystem.avgInterval));
+                                    integralOfCurNumOfSysJobs[0] / currentTimeFromStart()));
                     systemUseFactors.add(
                             new Point(currentTimeFromStart(), currentSystemUseFactor()));
                 } catch (NullPointerException ignored) {
                     // Exception because of in time concurrent access for statistics maps
                     // Just skip ones of many points
                 }
-            }}, 100, 25, TimeUnit.MILLISECONDS);
+            }}, 100, STATISTICS_COLLECTING_INTERVAL, TimeUnit.MILLISECONDS);
         while (counter < numberOfJobs) {
             final Job nextJob =
                     new Job(generateJobComplexity(processGenerator, processGeneratorValues));
@@ -140,7 +148,7 @@ public class QueueSystem {
         setFinishRunTime();
         setTotalRunTime();
         setSuccessfullyCompletedJobs();
-        executor.shutdown();
+        statisticsCollector.shutdown();
         LOGGER.info("The total run time: " + totalRunTimeString());
         saveCharts(intervalGeneratorValues, processGeneratorValues, jobQueueNumbers,
                 jobSystemNumbers, avgJobQueueNumbers, avgJobSystemNumbers, systemUseFactors);
@@ -167,11 +175,11 @@ public class QueueSystem {
     }
 
     private static long currentNumberOfJobs() {
-        return engine.getTaskCount();
+        return engine.getTaskCount() - engine.getCompletedTaskCount();
     }
 
     private static long currentNumberOfQueueJobs() {
-        return engine.getTaskCount() - engine.getCompletedTaskCount();
+        return currentNumberOfJobs() - engine.getActiveCount();
     }
 
     private static long currentTimeFromStart() {
@@ -337,14 +345,6 @@ public class QueueSystem {
                 relativeWorkersUse / QueueSystem.numberOfWorkers;
     }
 
-    private static double currentAvgJobQueueTime() {
-        long jobQueueTimeSum = 0;
-        for (Map<String, Long> jobTimes : Job.STATISTICS.values()) {
-            jobQueueTimeSum += jobTimes.get(Job.IN_QUEUE_TIME);
-        }
-        return ((double) jobQueueTimeSum) / currentNumberOfQueueJobs();
-    }
-
     private static void calculateAvgJobQueueTime() {
         long jobQueueTimeSum = 0;
         for (Map<String, Long> jobTimes : Job.STATISTICS.values()) {
@@ -352,14 +352,6 @@ public class QueueSystem {
         }
         QueueSystem.avgJobQueueTime =
                 ((double) jobQueueTimeSum) / QueueSystem.numberOfJobs;
-    }
-
-    private static double currentAvgJobSystemTime() {
-        long jobSystemTimeSum = 0;
-        for (Map<String, Long> jobTimes : Job.STATISTICS.values()) {
-            jobSystemTimeSum += jobTimes.get(Job.IN_SYSTEM_TIME);
-        }
-        return ((double) jobSystemTimeSum) / currentNumberOfJobs();
     }
 
     private static void calculateAvgJobSystemTime() {
@@ -371,18 +363,10 @@ public class QueueSystem {
                 ((double) jobSystemTimeSum) / QueueSystem.numberOfJobs;
     }
 
-//    private static double currentAvgJobQueueNumber() {
-//        return currentAvgJobQueueTime() / QueueSystem.avgInterval;
-//    }
-
     private static void calculateAvgJobQueueNumber() {
         QueueSystem.avgJobQueueNumber =
                 QueueSystem.avgJobQueueTime / QueueSystem.avgInterval;
     }
-
-//    private static double currentAvgJobSystemNumber() {
-//        return currentAvgJobSystemTime() / QueueSystem.avgInterval;
-//    }
 
     private static void calculateAvgJobSystemNumber() {
         QueueSystem.avgJobSystemNumber =

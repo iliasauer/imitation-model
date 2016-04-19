@@ -265,10 +265,9 @@ public class ComplexRandom {
     }
 
     public static List<Double> fromMinToMaxList(List<Integer> values) {
-        final int n = values.size();
-        final double step = 50.0 / n;
         final int min = min(values);
         final int max = max(values);
+        final double step = ((double)(max - min)) / 500;
         List<Double> minMaxList = new ArrayList<>();
         double currentValue = min;
         while (currentValue <= max){
