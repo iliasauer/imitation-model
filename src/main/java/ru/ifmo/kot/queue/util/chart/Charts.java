@@ -1,6 +1,7 @@
 package ru.ifmo.kot.queue.util.chart;
 
 import org.apache.commons.lang3.ArrayUtils;
+import ru.ifmo.kot.queue.util.math.MathUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,14 +36,18 @@ public class Charts {
 
     public static BarChart distributionBarChart() {
         double[] intervalsLabels = new double[INTERVALS.length - 1];
-        System.arraycopy(INTERVALS, 1, intervalsLabels, 0, intervalsLabels.length);
+        for (int i = 0; i < intervalsLabels.length; i++) {
+            intervalsLabels[i] = MathUtil.round(INTERVALS[i + 1], 3);
+        }
         double[] heights = heightsOfBarRectangles(EXP_SEQUENCE_2, INTERVALS);
         return new BarChart("barChart", valuesAsList(intervalsLabels), valuesAsList(heights));
     }
 
     public static Chart exponentialDistributionDensity() {
         double[] intervalsNext = new double[INTERVALS.length - 1];
-        System.arraycopy(INTERVALS, 1, intervalsNext, 0, intervalsNext.length);
+        for (int i = 0; i < intervalsNext.length; i++) {
+            intervalsNext[i] = MathUtil.round(INTERVALS[i + 1], 3);
+        }
         double[] density = new double[intervalsNext.length];
         for (int i = 0; i < intervalsNext.length; i++) {
             density[i] = exponentialDistributionDensityAtPoint(intervalsNext[i], 0.5);

@@ -67,7 +67,8 @@ define([
             const ctx = document.getElementById(id).getContext("2d");
             new ChartFork(ctx).Overlay(overlayData, {
                 populateSparseData: true,
-                overlayBars: false
+                overlayBars: false,
+                datasetFill: true
             });
         }
 
