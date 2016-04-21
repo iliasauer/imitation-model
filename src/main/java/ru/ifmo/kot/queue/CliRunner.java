@@ -54,7 +54,7 @@ public class CliRunner implements Runnable {
             storage = Integer.parseInt(args[2]);
             interval = Integer.parseInt(args[4]);
             process = Integer.parseInt(args[5]);
-            if (args.length == 7) {
+            if (args.length >= 7) {
                 runs = Integer.parseInt(args[6]);
             } else {
                 runs = 1;
@@ -134,11 +134,17 @@ public class CliRunner implements Runnable {
                 OutputData.AVG_JOB_SYSTEM_TIME_KEY, OutputData.AVG_JOB_QUEUE_NUMBER_KEY,
                 OutputData.AVG_JOB_SYSTEM_NUMBER_KEY, OutputData.ABSOLUTE_SYSTEM_THROUGHPUT_KEY,
                 OutputData.RELATIVE_SYSTEM_THROUGHPUT_KEY};
+//        for (String outputKey: outputKeys) {
+//            startStopInfoBuilder.append("The ")
+//                    .append(QueueSystem.OUTPUT_PARAM_NAMES.get(outputKey))
+//                    .append(": ").append(outputMap.get(outputKey)).append("\n");
+//        }
         for (String outputKey: outputKeys) {
-            startStopInfoBuilder.append("The ")
-                    .append(QueueSystem.OUTPUT_PARAM_NAMES.get(outputKey))
-                    .append(": ").append(outputMap.get(outputKey)).append("\n");
+            startStopInfoBuilder.append(outputMap.get(outputKey)).append(", ");
         }
+        final int builderLength = startStopInfoBuilder.length();
+        startStopInfoBuilder.delete(builderLength - 2, builderLength);
+//        startStopInfoBuilder.append('\n');
         return startStopInfoBuilder.toString();
     }
 
@@ -151,7 +157,7 @@ public class CliRunner implements Runnable {
                 runs, seed));
         for (int i = 0; i < runs; i++) {
             runCounter++;
-            LOGGER.info("Run #" + runCounter);
+//            LOGGER.info("Run #" + runCounter);
             QueueSystem.run(jobs, workers,
                     storage, discipline,
                     interval, process, seed);

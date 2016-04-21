@@ -44,7 +44,7 @@ public class Job implements Runnable {
         return log;
     }
 
-    private enum State {
+    public enum State {
         OPEN, IN_PROGRESS, RESOLVED, CLOSED, REJECTED
     }
 

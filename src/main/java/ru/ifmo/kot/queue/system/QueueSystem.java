@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.ifmo.kot.queue.system.engine.Engine;
 import ru.ifmo.kot.queue.system.engine.Worker;
+import ru.ifmo.kot.queue.system.job.FutureJob;
 import ru.ifmo.kot.queue.system.job.Job;
 import ru.ifmo.kot.queue.system.storage.Discipline;
 import ru.ifmo.kot.queue.system.storage.StorageFactory;
@@ -296,7 +297,9 @@ public class QueueSystem {
     private static void awaitTasksCompletion(List<Future<?>> futures) {
         for (Future<?> each : futures) {
             try {
-                each.get();
+                if (!((FutureJob) each).getJob().state().equals(Job.State.REJECTED)) {
+                    each.get();
+                }
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("The internal system error", e);
             }
