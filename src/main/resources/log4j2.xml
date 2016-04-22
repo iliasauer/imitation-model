@@ -53,9 +53,5 @@
         <logger name="ru.ifmo.kot.queue.ui.CommonWebSocket" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
         </logger>
-        <!--<logger name="ru.ifmo.kot.queue.system.engine.inner" level="TRACE" additivity="false">-->
-            <!--<AppenderRef ref="Console"/>-->
-            <!--<AppenderRef ref="RollingFile"/>-->
-        <!--</logger>-->
     </Loggers>
 </Configuration>

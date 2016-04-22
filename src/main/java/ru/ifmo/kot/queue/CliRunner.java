@@ -134,17 +134,18 @@ public class CliRunner implements Runnable {
                 OutputData.AVG_JOB_SYSTEM_TIME_KEY, OutputData.AVG_JOB_QUEUE_NUMBER_KEY,
                 OutputData.AVG_JOB_SYSTEM_NUMBER_KEY, OutputData.ABSOLUTE_SYSTEM_THROUGHPUT_KEY,
                 OutputData.RELATIVE_SYSTEM_THROUGHPUT_KEY};
+        // full output
 //        for (String outputKey: outputKeys) {
 //            startStopInfoBuilder.append("The ")
 //                    .append(QueueSystem.OUTPUT_PARAM_NAMES.get(outputKey))
 //                    .append(": ").append(outputMap.get(outputKey)).append("\n");
 //        }
+        // csv-like output
         for (String outputKey: outputKeys) {
             startStopInfoBuilder.append(outputMap.get(outputKey)).append(", ");
         }
         final int builderLength = startStopInfoBuilder.length();
         startStopInfoBuilder.delete(builderLength - 2, builderLength);
-//        startStopInfoBuilder.append('\n');
         return startStopInfoBuilder.toString();
     }
 
@@ -157,7 +158,7 @@ public class CliRunner implements Runnable {
                 runs, seed));
         for (int i = 0; i < runs; i++) {
             runCounter++;
-//            LOGGER.info("Run #" + runCounter);
+            LOGGER.info("Run #" + runCounter);
             QueueSystem.run(jobs, workers,
                     storage, discipline,
                     interval, process, seed);
