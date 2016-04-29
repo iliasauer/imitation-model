@@ -42,6 +42,6 @@ If there was not specified any parameters, then the program start with default p
 
 To run the built project, execute:
 
-$ java -jar %name_of_built_project%.jar UI
+$ java -jar %path_to_jar% UI
 
 Then open a browser on 127.0.0.1:8080
