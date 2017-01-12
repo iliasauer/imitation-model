@@ -23,14 +23,14 @@ To run the built project, execute:
 $ java -jar %the_name_of_the_built_project%.jar [parameters splited by the space]
 
 Parameters should be specified in this order:
-1. The number of jobs
-2. The number of workers
-3. The storage capacity
-4. The service discipline (LIFO or FIFO) (see https://en.wikipedia.org/wiki/FIFO_and_LIFO_accounting)
-5. The average time interval of a next job entry
-6. The average time of processing for a next job
-7. The number of runs
-8. The seed of the random generator (for 5th and 6th parameters) (optional parameter)
+1. The number of jobs  
+2. The number of workers  
+3. The storage capacity  
+4. The service discipline (LIFO or FIFO) (see https://en.wikipedia.org/wiki/FIFO_and_LIFO_accounting)  
+5. The average time interval of a next job entry  
+6. The average time of processing for a next job  
+7. The number of runs  
+8. The seed of the random generator (for 5th and 6th parameters) (optional parameter)  
 
 For example:
 
